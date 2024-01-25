@@ -78,4 +78,11 @@ dependencies {
     // icons
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
 
+    // navigation
+    implementation("androidx.navigation:navigation-compose:2.7.6")
+
+    // permission
+    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+
+
 }

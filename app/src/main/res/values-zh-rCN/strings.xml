@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Heart</string>
+    <string name="welcome">欢迎</string>
+    <string name="welcome_tip">该软件将获取手机蓝牙权限，并收集您的个人信息</string>
+    <string name="agree_continue">同意并继续</string>
+</resources>
