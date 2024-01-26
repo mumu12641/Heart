@@ -1,6 +1,5 @@
 package io.github.mumu12641.ui.page.home
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
@@ -27,6 +26,7 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Badge
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -46,6 +46,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.mumu12641.R
+import io.github.mumu12641.service.Device
+import io.github.mumu12641.service.SearchState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,7 +64,9 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
     }, content = { paddingValues ->
         HomeContent(homeViewModel, modifier = Modifier.padding(paddingValues))
     }, floatingActionButton = {
-        FloatingActionButton(modifier = Modifier.padding(bottom = 18.dp), onClick = { /*TODO*/ }) {
+        FloatingActionButton(modifier = Modifier.padding(bottom = 18.dp), onClick = {
+            homeViewModel.check()
+        }) {
             Icon(Icons.Outlined.Search, contentDescription = null)
         }
     })
@@ -73,8 +77,14 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
 fun HomeContent(homeViewModel: HomeViewModel, modifier: Modifier) {
     val uiState by homeViewModel.uiState.collectAsState()
     val isExpanded = uiState.isExpanded
+    val bluetoothState by homeViewModel.bluetoothState.collectAsState()
+    val devices  = bluetoothState.devices
+    val searchState = bluetoothState.searchState
 
-    val corner by animateDpAsState(if (!isExpanded) 32.dp else 0.dp, label = "")
+    val corner by animateDpAsState(
+        if (!isExpanded || devices.isEmpty()) 32.dp else 0.dp,
+        label = ""
+    )
     Column(
         modifier.padding(horizontal = 10.dp)
     ) {
@@ -102,14 +112,29 @@ fun HomeContent(homeViewModel: HomeViewModel, modifier: Modifier) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
+            Row(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 28.dp),
-                text = "Searching",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-            )
+            ) {
+                Text(
+                    modifier = Modifier
+                        .padding(start = 28.dp),
+                    text = "Searching",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
+                Column {
+                    AnimatedVisibility(visible = searchState == SearchState.Searching) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = MaterialTheme.colorScheme.secondary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
+
+                    }
+                }
+            }
+
             Row(
                 modifier = Modifier
                     .padding(end = 20.dp)
@@ -118,7 +143,6 @@ fun HomeContent(homeViewModel: HomeViewModel, modifier: Modifier) {
                     .background(MaterialTheme.colorScheme.surfaceTint.copy(alpha = 0.2f))
                     .clickable {
                         homeViewModel.flipExpanded()
-                        Log.d("debug", "click")
                     },
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
@@ -133,11 +157,11 @@ fun HomeContent(homeViewModel: HomeViewModel, modifier: Modifier) {
         Column {
             AnimatedVisibility(visible = isExpanded) {
                 LazyColumn {
-                    for ((index, device) in uiState.devices.withIndex()) {
+                    for ((index, device) in devices.withIndex()) {
                         item {
                             DeviceItem(
                                 device = device,
-                                isEnd = index == uiState.devices.size - 1
+                                isEnd = index == devices.size - 1
                             )
                         }
                     }

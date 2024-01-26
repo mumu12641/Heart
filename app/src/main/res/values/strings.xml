@@ -3,4 +3,5 @@
     <string name="welcome">Welcome</string>
     <string name="welcome_tip">This software will obtain Bluetooth permissions from your phone and collect your personal information</string>
     <string name="agree_continue">Agree and continue</string>
+    <string name="bluetooth_closed">Bluetooth is not turned on. Please turn on Bluetooth manually and try again.</string>
 </resources>

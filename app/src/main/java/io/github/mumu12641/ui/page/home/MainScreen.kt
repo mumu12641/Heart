@@ -15,6 +15,7 @@ import io.github.mumu12641.util.Route
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun MainScreen(homeViewModel: HomeViewModel) {
+
     val navController = rememberNavController()
     val state =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -40,9 +41,10 @@ fun MainScreen(homeViewModel: HomeViewModel) {
     NavHost(
         navController = navController,
         startDestination = if (!state.allPermissionsGranted) Route.WELCOME else Route.HOME
+//        startDestination =  Route.WELCOME
     ) {
         composable(Route.WELCOME) {
-            WelcomeScreen(navController) {
+            WelcomeScreen {
                 state.launchMultiplePermissionRequest()
             }
         }
