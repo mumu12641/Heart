@@ -28,8 +28,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val filter = IntentFilter(BluetoothDevice.ACTION_FOUND)
-        registerReceiver(receiver, filter)
 
         setContent {
             Surface(
@@ -43,32 +41,32 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private val receiver = object : BroadcastReceiver() {
-        @SuppressLint("MissingPermission")
-        override fun onReceive(context: Context, intent: Intent) {
-            when (intent.action) {
-                BluetoothDevice.ACTION_FOUND -> {
-                    // Discovery has found a device. Get the BluetoothDevice
-                    // object and its info from the Intent.
-                    val device = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        intent.getParcelableExtra(
-                            BluetoothDevice.EXTRA_DEVICE,
-                            BluetoothDevice::class.java
-                        )
-                    } else {
-                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-                    }
-                    val deviceName = device?.name
-                    val deviceHardwareAddress = device?.address // MAC address
-                    homeViewModel.foundNewDevice(deviceName, deviceHardwareAddress)
-                    Log.d("MainActivity", "onReceive: $deviceName, $deviceHardwareAddress")
-                }
-            }
-        }
-    }
+//    private val receiver = object : BroadcastReceiver() {
+//        @SuppressLint("MissingPermission")
+//        override fun onReceive(context: Context, intent: Intent) {
+//            when (intent.action) {
+//                BluetoothDevice.ACTION_FOUND -> {
+//                    // Discovery has found a device. Get the BluetoothDevice
+//                    // object and its info from the Intent.
+//                    val device = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//                        intent.getParcelableExtra(
+//                            BluetoothDevice.EXTRA_DEVICE,
+//                            BluetoothDevice::class.java
+//                        )
+//                    } else {
+//                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+//                    }
+//                    val deviceName = device?.name
+//                    val deviceHardwareAddress = device?.address // MAC address
+//                    homeViewModel.foundNewDevice(deviceName, deviceHardwareAddress)
+//                    Log.d("MainActivity", "onReceive: $deviceName, $deviceHardwareAddress")
+//                }
+//            }
+//        }
+//    }
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(receiver)
+//        unregisterReceiver(receiver)
     }
 }

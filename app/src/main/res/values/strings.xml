@@ -4,4 +4,7 @@
     <string name="welcome_tip">This software will obtain Bluetooth permissions from your phone and collect your personal information</string>
     <string name="agree_continue">Agree and continue</string>
     <string name="bluetooth_closed">Bluetooth is not turned on. Please turn on Bluetooth manually and try again.</string>
+    <string name="empty_device">No device found</string>
+    <string name="scanning">Scanning</string>
+    <string name="scanned">" devices found"</string>
 </resources>

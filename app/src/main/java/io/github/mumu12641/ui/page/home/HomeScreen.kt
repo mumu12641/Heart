@@ -15,16 +15,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Bluetooth
 import androidx.compose.material.icons.outlined.BluetoothConnected
-import androidx.compose.material.icons.outlined.ExpandLess
-import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.StopCircle
 import androidx.compose.material3.Badge
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,13 +44,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.zhzc0x.bluetooth.client.Device
 import io.github.mumu12641.R
-import io.github.mumu12641.service.Device
-import io.github.mumu12641.service.SearchState
+import io.github.mumu12641.service.ScanState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(homeViewModel: HomeViewModel) {
+    val uiState by homeViewModel.uiState.collectAsState()
+    val devices = uiState.bluetoothState.devices
+    val scanState = uiState.bluetoothState.scanState
+    val connectedDevice = uiState.bluetoothState.connectedDevice
+    val scanning = scanState == ScanState.Scanning
+
     Scaffold(topBar = {
         LargeTopAppBar(modifier = Modifier.padding(horizontal = 8.dp), title = {
             Text(text = stringResource(id = R.string.app_name))
@@ -62,32 +67,54 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
 
         })
     }, content = { paddingValues ->
-        HomeContent(homeViewModel, modifier = Modifier.padding(paddingValues))
+        HomeContent(
+            modifier = Modifier.padding(paddingValues),
+            devices,
+            scanState,
+            connectedDevice,
+            disconnect = { homeViewModel.disconnect() }
+        ) { homeViewModel.connect(it) }
     }, floatingActionButton = {
         FloatingActionButton(modifier = Modifier.padding(bottom = 18.dp), onClick = {
-            homeViewModel.check()
+            if (!scanning) {
+                homeViewModel.startScan()
+            } else {
+                homeViewModel.stopScan()
+            }
         }) {
-            Icon(Icons.Outlined.Search, contentDescription = null)
+            Icon(
+                if (!scanning) Icons.Outlined.Search else Icons.Outlined.StopCircle,
+                contentDescription = null
+            )
         }
     })
 
 }
 
 @Composable
-fun HomeContent(homeViewModel: HomeViewModel, modifier: Modifier) {
-    val uiState by homeViewModel.uiState.collectAsState()
-    val isExpanded = uiState.isExpanded
-    val devices  = uiState.bluetoothState.devices
-    val searchState =  uiState.bluetoothState.searchState
+fun HomeContent(
+    modifier: Modifier,
+    devices: List<Device>,
+    scanState: ScanState,
+    connectedDevice: Device?,
+    disconnect: () -> Unit,
+    connectDevice: (Device) -> Unit
+) {
 
     val corner by animateDpAsState(
-        if (!isExpanded || devices.isEmpty()) 32.dp else 0.dp,
+        if (devices.isEmpty()) 32.dp else 0.dp,
         label = ""
     )
     Column(
         modifier.padding(horizontal = 10.dp)
     ) {
-        ConnectedDevice()
+        AnimatedVisibility(visible = scanState == ScanState.Connected) {
+            connectedDevice?.let {
+                ConnectedDevice(it) {
+                    disconnect()
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
         Text(
@@ -118,12 +145,21 @@ fun HomeContent(homeViewModel: HomeViewModel, modifier: Modifier) {
                 Text(
                     modifier = Modifier
                         .padding(start = 28.dp),
-                    text = "Searching",
+                    text = when (scanState) {
+                        ScanState.Scanning -> stringResource(id = R.string.scanning)
+                        ScanState.None -> stringResource(
+                            id = R.string.empty_device
+                        )
+
+                        else -> {
+                            devices.size.toString() + stringResource(id = R.string.scanned)
+                        }
+                    },
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                 )
                 Column {
-                    AnimatedVisibility(visible = searchState == SearchState.Searching) {
+                    AnimatedVisibility(visible = scanState == ScanState.Scanning) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(20.dp),
                             color = MaterialTheme.colorScheme.secondary,
@@ -134,34 +170,37 @@ fun HomeContent(homeViewModel: HomeViewModel, modifier: Modifier) {
                 }
             }
 
-            Row(
-                modifier = Modifier
-                    .padding(end = 20.dp)
-                    .size(24.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceTint.copy(alpha = 0.2f))
-                    .clickable {
-                        homeViewModel.flipExpanded()
-                    },
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    imageVector = if (!isExpanded) Icons.Outlined.ExpandMore else Icons.Outlined.ExpandLess,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                )
-            }
+
+//            Row(
+//                modifier = Modifier
+//                    .padding(end = 20.dp)
+//                    .size(24.dp)
+//                    .clip(CircleShape)
+//                    .background(MaterialTheme.colorScheme.surfaceTint.copy(alpha = 0.2f))
+//                    .clickable {
+//                        homeViewModel.flipExpanded()
+//                    },
+//                horizontalArrangement = Arrangement.Center,
+//                verticalAlignment = Alignment.CenterVertically,
+//            ) {
+//                Icon(
+//                    imageVector = if (!isExpanded) Icons.Outlined.ExpandMore else Icons.Outlined.ExpandLess,
+//                    contentDescription = null,
+//                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
+//                )
+//            }
         }
         Column {
-            AnimatedVisibility(visible = isExpanded) {
+            AnimatedVisibility(visible = devices.isNotEmpty()) {
                 LazyColumn {
                     for ((index, device) in devices.withIndex()) {
                         item {
                             DeviceItem(
                                 device = device,
                                 isEnd = index == devices.size - 1
-                            )
+                            ) {
+                                connectDevice(it)
+                            }
                         }
                     }
 
@@ -174,7 +213,7 @@ fun HomeContent(homeViewModel: HomeViewModel, modifier: Modifier) {
 }
 
 @Composable
-private fun ConnectedDevice() {
+private fun ConnectedDevice(device: Device, disconnect: () -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -203,12 +242,12 @@ private fun ConnectedDevice() {
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = "BLE-02",
+                    text = device.name!!,
                     style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = "connected",
+                    text = device.address,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                 )
@@ -217,9 +256,8 @@ private fun ConnectedDevice() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeviceItem(device: Device, isEnd: Boolean) {
+fun DeviceItem(device: Device, isEnd: Boolean, connectDevice: (Device) -> Unit) {
     Row(
         modifier = Modifier
             .padding(horizontal = 6.dp)
@@ -240,21 +278,30 @@ fun DeviceItem(device: Device, isEnd: Boolean) {
                 modifier = Modifier.padding(start = 28.dp),
                 contentDescription = null
             )
-            Text(
-                text = device.name, modifier = Modifier.padding(start = 12.dp, end = 6.dp),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            Column {
+                Text(
+                    text = device.name ?: "",
+                    modifier = Modifier.padding(start = 12.dp, end = 6.dp),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = device.address,
+                    modifier = Modifier.padding(start = 12.dp, end = 6.dp, top = 2.dp),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+
         }
         Badge(
-            modifier = Modifier.padding(end = 20.dp),
+            modifier = Modifier
+                .padding(end = 20.dp)
+                .clickable { connectDevice(device) },
             containerColor = MaterialTheme.colorScheme.surfaceTint.copy(alpha = 0.2f),
             contentColor = MaterialTheme.colorScheme.outline,
             content = {
-                Text(
-                    text = "90",
-                    style = MaterialTheme.typography.labelSmall,
-                )
+                Icon(Icons.Outlined.Link, contentDescription = null)
             },
         )
     }
