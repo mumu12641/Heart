@@ -88,5 +88,6 @@ dependencies {
     // lottie files
     implementation ("com.airbnb.android:lottie-compose:6.3.0")
 
-
+    // Bluetooth toolkit
+    implementation("com.zhzc0x.bluetooth:client-android:1.0.1")
 }

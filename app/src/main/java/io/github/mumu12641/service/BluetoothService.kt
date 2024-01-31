@@ -8,7 +8,6 @@ import android.util.Log
 import io.github.mumu12641.App.Companion.context
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 @SuppressLint("MissingPermission")
@@ -20,13 +19,13 @@ class BluetoothService {
         context.getSystemService(BluetoothManager::class.java)
     private val bluetoothAdapter: BluetoothAdapter? = bluetoothManager.adapter
 
-    private val _bluetoothState = MutableStateFlow(
+    val _bluetoothState = MutableStateFlow(
         value = BluetoothState(
             SearchState.None, emptyList()
         )
 
     )
-    val bluetoothState: StateFlow<BluetoothState> get() = _bluetoothState
+    val bluetoothState: Flow<BluetoothState> get() = _bluetoothState
 
 
     // paired before
@@ -55,7 +54,6 @@ class BluetoothService {
 }
 
 
-
 sealed class SearchState {
     data object Searching : SearchState()
     data object None : SearchState()
@@ -64,4 +62,5 @@ sealed class SearchState {
 data class Device(val name: String, val MAC: String)
 
 data class BluetoothState(var searchState: SearchState, var devices: List<Device>)
+
 val DEFAULT_BLUETOOTH_STATE = BluetoothState(SearchState.None, emptyList())

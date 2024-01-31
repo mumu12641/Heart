@@ -77,9 +77,8 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
 fun HomeContent(homeViewModel: HomeViewModel, modifier: Modifier) {
     val uiState by homeViewModel.uiState.collectAsState()
     val isExpanded = uiState.isExpanded
-    val bluetoothState by homeViewModel.bluetoothState.collectAsState()
-    val devices  = bluetoothState.devices
-    val searchState = bluetoothState.searchState
+    val devices  = uiState.bluetoothState.devices
+    val searchState =  uiState.bluetoothState.searchState
 
     val corner by animateDpAsState(
         if (!isExpanded || devices.isEmpty()) 32.dp else 0.dp,

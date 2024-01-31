@@ -7,24 +7,39 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.App.Companion.context
 import io.github.mumu12641.R
 import io.github.mumu12641.service.BluetoothService
+import io.github.mumu12641.service.BluetoothState
+import io.github.mumu12641.service.DEFAULT_BLUETOOTH_STATE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor() : ViewModel() {
+class HomeViewModel @Inject constructor() :
+    ViewModel() {
 
-    private val _uiState = MutableStateFlow(
-        value = UiState(false)
-    )
-    val uiState: StateFlow<UiState> get() = _uiState
-
+    //    private val _uiState = MutableStateFlow(
+//        value = UiState(false)
+//    )
+//    val uiState: StateFlow<UiState> get() = _uiState
     private val bluetoothService = BluetoothService()
+    private val _isExpanded = MutableStateFlow(false)
+    private val _bluetoothState = bluetoothService.bluetoothState
 
-    val bluetoothState by lazy { bluetoothService.bluetoothState }
+    val uiState: StateFlow<UiState> =
+        combine(_isExpanded, _bluetoothState) { isExpanded, bluetoothState ->
+            UiState(isExpanded, bluetoothState)
+        }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(),
+                initialValue = UiState(false, DEFAULT_BLUETOOTH_STATE)
+            )
+//    val bluetoothState by lazy { bluetoothService.bluetoothState }
 
 //    init {
 //        viewModelScope.launch {
@@ -35,9 +50,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
 //    }
 
     fun flipExpanded() {
-        _uiState.update {
-            it.copy(isExpanded = !it.isExpanded)
-        }
+        _isExpanded.value = !_isExpanded.value
     }
 
     fun check() {
@@ -55,7 +68,6 @@ class HomeViewModel @Inject constructor() : ViewModel() {
     }
 
     fun foundNewDevice(name: String?, MAC: String?) {
-
         if (name != null && MAC != null) {
             bluetoothService.foundNewDevice(name, MAC)
         }
@@ -65,5 +77,5 @@ class HomeViewModel @Inject constructor() : ViewModel() {
 }
 
 data class UiState(
-    var isExpanded: Boolean
+    var isExpanded: Boolean, var bluetoothState: BluetoothState
 )
