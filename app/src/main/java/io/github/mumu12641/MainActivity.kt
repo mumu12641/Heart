@@ -1,15 +1,6 @@
 package io.github.mumu12641
 
-import android.annotation.SuppressLint
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -21,6 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.github.mumu12641.ui.page.home.HomeViewModel
 import io.github.mumu12641.ui.page.home.MainScreen
 import io.github.mumu12641.ui.theme.HeartTheme
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -28,7 +20,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        Timber.plant(Timber.DebugTree())
         setContent {
             Surface(
                 color = MaterialTheme.colorScheme.background,

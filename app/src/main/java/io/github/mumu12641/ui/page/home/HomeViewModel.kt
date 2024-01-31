@@ -1,5 +1,6 @@
 package io.github.mumu12641.ui.page.home
 
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,11 +11,17 @@ import io.github.mumu12641.R
 import io.github.mumu12641.service.BLEService
 import io.github.mumu12641.service.BluetoothState
 import io.github.mumu12641.service.DEFAULT_BLUETOOTH_STATE
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,21 +38,50 @@ class HomeViewModel @Inject constructor() :
 
     val uiState: StateFlow<UiState> =
         combine(_isExpanded, _bluetoothState) { _, bluetoothState ->
-            UiState(bluetoothState)
+            UiState(bluetoothState, null)
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = UiState(DEFAULT_BLUETOOTH_STATE)
+            initialValue = UiState(DEFAULT_BLUETOOTH_STATE, null)
         )
 //    val bluetoothState by lazy { bluetoothService.bluetoothState }
 
-//    init {
-//        viewModelScope.launch {
-//            bluetoothService.bluetoothState.collect {
-//                _uiState.value.bluetoothState = it
+    init {
+        val logFlow = channelFlow {
+            Timber.plant(object : Timber.Tree() {
+                private val date = Date()
+                override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+                    date.time = System.currentTimeMillis()
+                    trySend(
+                        LogInfo(
+                            SimpleDateFormat("HH:mm:ss").format(date.time),
+                            message,
+                            priority
+                        )
+                    )
+                }
+            })
+            awaitClose {
+                Timber.d("logChannelFLow closed")
+            }
+
+        }
+        viewModelScope.launch {
+            logFlow.collect {
+                uiState.value.log = "[${it.times}], ${it.msg}"
+            }
+        }
+//        lifecycleScope.launch {
+//            logFlow.collect {
+//                println("collect=$it")
+//                while (logoutList.size >= 1000) {
+//                    logoutList.removeAt(0)
+//                }
+//                logoutList.add(it)
+//                scrollToBottom = !scrollToBottom
 //            }
 //        }
-//    }
+    }
 
 //    fun flipExpanded() {
 //        _isExpanded.value = !_isExpanded.value
@@ -87,5 +123,8 @@ class HomeViewModel @Inject constructor() :
 }
 
 data class UiState(
-    var bluetoothState: BluetoothState
+    var bluetoothState: BluetoothState,
+    var log: String?
 )
+
+data class LogInfo(val times: String, val msg: String, val priority: Int = Log.DEBUG)

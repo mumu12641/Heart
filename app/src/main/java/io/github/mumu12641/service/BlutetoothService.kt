@@ -1,6 +1,5 @@
 package io.github.mumu12641.service
 
-import android.util.Log
 import android.widget.Toast
 import com.zhzc0x.bluetooth.BluetoothClient
 import com.zhzc0x.bluetooth.client.ClientState
@@ -56,14 +55,14 @@ class BLEService {
         bluetoothClient.connect(device, 80) {
             when (it) {
                 ConnectState.CONNECTED -> {
-                    Log.d(TAG, "connect: CONNECTED")
+                    Timber.tag(TAG).d("connect: CONNECTED")
                     if (bluetoothClient.supportedServices() == null) {
-                        Log.d(TAG, "connect: null")
+                        Timber.tag(TAG).d("connect: null")
                     } else {
                         bluetoothClient.supportedServices()!!.let {
-                            Log.d(TAG, "connect: ${it.size}")
+                            Timber.tag(TAG).d("connect: %s", it.size)
                             it.forEach {
-                                Log.d(TAG, "connect: ${it}")
+                                Timber.tag(TAG).d("connect: %s", it)
                             }
                         }
                     }
@@ -81,10 +80,10 @@ class BLEService {
                     Toast.makeText(context, "connecting", Toast.LENGTH_SHORT).show()
                 }
 
-                ConnectState.CONNECT_TIMEOUT -> Log.d(TAG, "connect: CONNECT_TIMEOUT")
-                ConnectState.CONNECT_ERROR -> Log.d(TAG, "connect: CONNECT_ERROR")
-                ConnectState.DISCONNECTED -> Log.d(TAG, "connect: DISCONNECTED")
-                ConnectState.RECONNECT -> Log.d(TAG, "connect: RECONNECT")
+                ConnectState.CONNECT_TIMEOUT -> Timber.tag(TAG).d("connect: CONNECT_TIMEOUT")
+                ConnectState.CONNECT_ERROR -> Timber.tag(TAG).d("connect: CONNECT_ERROR")
+                ConnectState.DISCONNECTED -> Timber.tag(TAG).d("connect: DISCONNECTED")
+                ConnectState.RECONNECT -> Timber.tag(TAG).d("connect: RECONNECT")
 //                else -> {
 //                    Log.d(TAG, "connect: error")
 //                    _bluetoothState.update {

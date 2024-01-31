@@ -52,9 +52,7 @@ import io.github.mumu12641.service.ScanState
 @Composable
 fun HomeScreen(homeViewModel: HomeViewModel) {
     val uiState by homeViewModel.uiState.collectAsState()
-    val devices = uiState.bluetoothState.devices
     val scanState = uiState.bluetoothState.scanState
-    val connectedDevice = uiState.bluetoothState.connectedDevice
     val scanning = scanState == ScanState.Scanning
 
     Scaffold(topBar = {
@@ -69,11 +67,8 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
     }, content = { paddingValues ->
         HomeContent(
             modifier = Modifier.padding(paddingValues),
-            devices,
-            scanState,
-            connectedDevice,
-            disconnect = { homeViewModel.disconnect() }
-        ) { homeViewModel.connect(it) }
+            homeViewModel
+        )
     }, floatingActionButton = {
         FloatingActionButton(modifier = Modifier.padding(bottom = 18.dp), onClick = {
             if (!scanning) {
@@ -94,12 +89,18 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
 @Composable
 fun HomeContent(
     modifier: Modifier,
-    devices: List<Device>,
-    scanState: ScanState,
-    connectedDevice: Device?,
-    disconnect: () -> Unit,
-    connectDevice: (Device) -> Unit
+//    devices: List<Device>,
+//    scanState: ScanState,
+//    connectedDevice: Device?,
+//    disconnect: () -> Unit,
+//    connectDevice: (Device) -> Unit
+    homeViewModel: HomeViewModel
 ) {
+    val uiState by homeViewModel.uiState.collectAsState()
+    val devices = uiState.bluetoothState.devices
+    val scanState = uiState.bluetoothState.scanState
+    val connectedDevice = uiState.bluetoothState.connectedDevice
+    val log = uiState.log
 
     val corner by animateDpAsState(
         if (devices.isEmpty()) 32.dp else 0.dp,
@@ -111,7 +112,7 @@ fun HomeContent(
         AnimatedVisibility(visible = scanState == ScanState.Connected) {
             connectedDevice?.let {
                 ConnectedDevice(it) {
-                    disconnect()
+                    homeViewModel.disconnect()
                 }
             }
         }
@@ -199,12 +200,15 @@ fun HomeContent(
                                 device = device,
                                 isEnd = index == devices.size - 1
                             ) {
-                                connectDevice(it)
+                                homeViewModel.connect(it)
                             }
                         }
                     }
 
                 }
+            }
+            AnimatedVisibility(visible = log != null) {
+                Text(text = log ?: "")
             }
         }
 
