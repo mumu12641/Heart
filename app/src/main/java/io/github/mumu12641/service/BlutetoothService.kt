@@ -1,7 +1,8 @@
 package io.github.mumu12641.service
 
-import android.widget.Toast
+import android.util.Log
 import com.zhzc0x.bluetooth.BluetoothClient
+import com.zhzc0x.bluetooth.client.Characteristic
 import com.zhzc0x.bluetooth.client.ClientState
 import com.zhzc0x.bluetooth.client.ClientType
 import com.zhzc0x.bluetooth.client.ConnectState
@@ -12,10 +13,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import timber.log.Timber
+import java.nio.ByteBuffer
 
 class BLEService {
 
     private val TAG = "BLEService"
+
     private var bluetoothClient: BluetoothClient =
         BluetoothClient(context, ClientType.BLE, null)
 
@@ -56,17 +59,24 @@ class BLEService {
             when (it) {
                 ConnectState.CONNECTED -> {
                     Timber.tag(TAG).d("connect: CONNECTED")
-                    if (bluetoothClient.supportedServices() == null) {
-                        Timber.tag(TAG).d("connect: null")
-                    } else {
-                        bluetoothClient.supportedServices()!!.let {
-                            Timber.tag(TAG).d("connect: %s", it.size)
-                            it.forEach {
-                                Timber.tag(TAG).d("connect: %s", it)
+                    Timber.tag(TAG).d("supportedServices: ")
+                    bluetoothClient.supportedServices()?.let {
+                        it.forEach { service ->
+                            Timber.tag(TAG).d("%s", service)
+                            service.characteristics?.forEach() { characteristic ->
+                                if (characteristic.properties.contains(Characteristic.Property.NOTIFY)
+                                ) {
+                                    bluetoothClient.assignService(service)
+                                    _bluetoothState.update {
+                                        it.copy(
+                                            service = service,
+                                            receiveCharacteristic = characteristic
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
-
                     _bluetoothState.update {
                         it.copy(
                             scanState = ScanState.Connected,
@@ -77,22 +87,13 @@ class BLEService {
                 }
 
                 ConnectState.CONNECTING -> {
-                    Toast.makeText(context, "connecting", Toast.LENGTH_SHORT).show()
+                    Timber.tag(TAG).d("connect: CONNECTING")
                 }
 
                 ConnectState.CONNECT_TIMEOUT -> Timber.tag(TAG).d("connect: CONNECT_TIMEOUT")
                 ConnectState.CONNECT_ERROR -> Timber.tag(TAG).d("connect: CONNECT_ERROR")
                 ConnectState.DISCONNECTED -> Timber.tag(TAG).d("connect: DISCONNECTED")
                 ConnectState.RECONNECT -> Timber.tag(TAG).d("connect: RECONNECT")
-//                else -> {
-//                    Log.d(TAG, "connect: error")
-//                    _bluetoothState.update {
-//                        it.copy(
-////                            scanState = ScanState.,
-//                            connectedDevice = null
-//                        )
-//                    }
-//                }
             }
         }
     }
@@ -100,7 +101,18 @@ class BLEService {
     fun disconnect() {
         bluetoothClient.disconnect()
     }
+
+    fun receiveData() {
+        bluetoothClient.receiveData(_bluetoothState.value.receiveCharacteristic!!.uuid) { data ->
+
+            Timber.tag(TAG).d("receiveData: ${data.toString(Charsets.US_ASCII)}")
+        }
+    }
 }
+
+@OptIn(ExperimentalUnsignedTypes::class)
+fun ByteArray.toHex(): String =
+    asUByteArray().joinToString("") { it.toString(radix = 16).padStart(2, '0') }
 
 sealed class ScanState {
     data object Scanning : ScanState()
@@ -110,10 +122,12 @@ sealed class ScanState {
 }
 
 data class BluetoothState(
-    var scanState: ScanState,
-    var devices: List<Device>,
-    var connectedDevice: Device?,
-    var services: List<Service>?
+    var scanState: ScanState = ScanState.None,
+    var devices: List<Device> = emptyList(),
+    var connectedDevice: Device? = null,
+    var services: List<Service>? = null,
+    var service: Service? = null,
+    var receiveCharacteristic: Characteristic? = null
 )
 
-val DEFAULT_BLUETOOTH_STATE = BluetoothState(ScanState.None, emptyList(), null, null)
+val DEFAULT_BLUETOOTH_STATE = BluetoothState()
