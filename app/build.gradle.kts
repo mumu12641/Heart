@@ -86,11 +86,14 @@ dependencies {
     implementation("com.google.accompanist:accompanist-permissions:0.34.0")
 
     // lottie files
-    implementation ("com.airbnb.android:lottie-compose:6.3.0")
+    implementation("com.airbnb.android:lottie-compose:6.3.0")
 
     // Bluetooth toolkit
     implementation("com.zhzc0x.bluetooth:client-android:1.0.1")
 
     // Timber
     implementation("com.jakewharton.timber:timber:5.0.1")
+
+    // MPAndroidChart
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

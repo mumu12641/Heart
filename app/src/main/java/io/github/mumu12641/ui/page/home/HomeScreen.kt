@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Bluetooth
 import androidx.compose.material.icons.outlined.BluetoothConnected
+import androidx.compose.material.icons.outlined.BluetoothDisabled
 import androidx.compose.material.icons.outlined.GetApp
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Link
@@ -30,6 +30,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -46,8 +47,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zhzc0x.bluetooth.client.Device
+import io.github.mumu12641.BLE.ScanState
 import io.github.mumu12641.R
-import io.github.mumu12641.service.ScanState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,13 +73,11 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
         )
     }, floatingActionButton = {
         Column {
-
             AnimatedVisibility(visible = receiveCharacteristic != null) {
                 FloatingActionButton(onClick = { homeViewModel.receiveData() }) {
                     Icon(Icons.Outlined.GetApp, contentDescription = null)
                 }
             }
-
             FloatingActionButton(
                 modifier = Modifier.padding(bottom = 18.dp, top = 18.dp),
                 onClick = {
@@ -117,13 +116,14 @@ fun HomeContent(
     ) {
         AnimatedVisibility(visible = scanState == ScanState.Connected) {
             connectedDevice?.let {
-                ConnectedDevice(it) {
+                ConnectedDevice(
+                    it
+                ) {
                     homeViewModel.disconnect()
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
         Text(
             text = "bluetooth devices",
             modifier = Modifier
@@ -133,7 +133,6 @@ fun HomeContent(
             style = MaterialTheme.typography.labelLarge
         )
 
-
         Row(
             modifier = Modifier
                 .padding(horizontal = 6.dp)
@@ -141,6 +140,7 @@ fun HomeContent(
                     RoundedCornerShape(32.dp, 32.dp, corner, corner)
                 )
                 .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f))
+                .clickable { }
                 .padding(top = 22.dp, bottom = 22.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
@@ -149,7 +149,8 @@ fun HomeContent(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    modifier = Modifier.padding(start = 28.dp),
+                    modifier = Modifier
+                        .padding(start = 28.dp),
                     text = when (scanState) {
                         ScanState.Scanning -> stringResource(id = R.string.scanning)
                         ScanState.None -> stringResource(
@@ -197,7 +198,7 @@ fun HomeContent(
             ) {
                 Text(
                     modifier = Modifier.padding(10.dp),
-                    text = "[${logs.last().times}],${logs.last().msg}",
+                    text = "[${logs.last().times}] ${logs.last().msg}",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
                 )
@@ -208,44 +209,62 @@ fun HomeContent(
 }
 
 @Composable
-private fun ConnectedDevice(device: Device, disconnect: () -> Unit) {
+private fun ConnectedDevice(
+    device: Device,
+    disconnect: () -> Unit
+) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .height(88.dp),
         color = Color.Unspecified,
     ) {
-        Row(modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 6.dp)
-            .clip(
-                RoundedCornerShape(32.dp)
-            )
-            .background(MaterialTheme.colorScheme.primaryContainer)
-            .clickable {}
-            .padding(16.dp, 20.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                Icons.Outlined.BluetoothConnected,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(end = 10.dp)
-            )
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                verticalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(
-                    text = device.name!!,
-                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
-                    color = MaterialTheme.colorScheme.onSurface,
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 6.dp)
+                .clip(
+                    RoundedCornerShape(32.dp)
                 )
-                Text(
-                    text = device.address,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .clickable { }
+                .padding(16.dp, 20.dp),
+        ) {
+            Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Outlined.BluetoothConnected,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(end = 10.dp)
                 )
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = device.name!!,
+                        style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        text = device.address,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    )
+                }
+            }
+            Row {
+                IconButton(
+                    onClick = { disconnect() }, modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                ) {
+                    Icon(
+                        Icons.Outlined.BluetoothDisabled,
+                        contentDescription = null,
+                    )
+                }
             }
         }
     }
@@ -259,11 +278,10 @@ private fun DeviceItem(device: Device, isEnd: Boolean, connectDevice: (Device) -
             .clip(
                 if (isEnd) RoundedCornerShape(0.dp, 0.dp, 32.dp, 32.dp)
                 else RoundedCornerShape(0.dp)
-
             )
             .clickable { }
             .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f))
-            .padding(bottom = 22.dp, top = 22.dp),
+            .padding(vertical = 15.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {

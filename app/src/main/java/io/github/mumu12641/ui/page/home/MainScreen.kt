@@ -41,8 +41,9 @@ fun MainScreen(homeViewModel: HomeViewModel) {
     NavHost(
         navController = navController,
         startDestination = if (!state.allPermissionsGranted) Route.WELCOME else Route.HOME
-//        startDestination =  Route.WELCOME
+//        startDestination = Route.WELCOME
     ) {
+
         composable(Route.WELCOME) {
             WelcomeScreen {
                 state.launchMultiplePermissionRequest()

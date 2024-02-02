@@ -8,10 +8,10 @@ import androidx.lifecycle.viewModelScope
 import com.zhzc0x.bluetooth.client.Device
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.App.Companion.context
+import io.github.mumu12641.BLE.BLEService
+import io.github.mumu12641.BLE.BluetoothState
+import io.github.mumu12641.BLE.DEFAULT_BLUETOOTH_STATE
 import io.github.mumu12641.R
-import io.github.mumu12641.service.BLEService
-import io.github.mumu12641.service.BluetoothState
-import io.github.mumu12641.service.DEFAULT_BLUETOOTH_STATE
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -36,11 +36,11 @@ class HomeViewModel @Inject constructor() :
         combine(
             _isExpanded, _bluetoothState, _logs
         ) { _, bluetoothState, logs ->
-            UiState(bluetoothState, logs)
+            UiState( bluetoothState, logs)
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = UiState(DEFAULT_BLUETOOTH_STATE, emptyList())
+            initialValue = UiState( DEFAULT_BLUETOOTH_STATE, emptyList())
         )
 
     init {
@@ -71,6 +71,10 @@ class HomeViewModel @Inject constructor() :
 
     }
 
+    fun changeExpanded() {
+        _isExpanded.value = !_isExpanded.value
+    }
+
     fun startScan() {
         if (bluetoothService.checkBlueToothIsOpen()) {
             bluetoothService.startScan()
@@ -99,6 +103,7 @@ class HomeViewModel @Inject constructor() :
 }
 
 data class UiState(
+//    var isExpanded: Boolean,
     var bluetoothState: BluetoothState,
     var logs: List<LogInfo>
 )

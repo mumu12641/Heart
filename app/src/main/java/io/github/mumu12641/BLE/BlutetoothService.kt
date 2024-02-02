@@ -1,19 +1,16 @@
-package io.github.mumu12641.service
+package io.github.mumu12641.BLE
 
-import android.util.Log
 import com.zhzc0x.bluetooth.BluetoothClient
 import com.zhzc0x.bluetooth.client.Characteristic
 import com.zhzc0x.bluetooth.client.ClientState
 import com.zhzc0x.bluetooth.client.ClientType
 import com.zhzc0x.bluetooth.client.ConnectState
 import com.zhzc0x.bluetooth.client.Device
-import com.zhzc0x.bluetooth.client.Service
 import io.github.mumu12641.App.Companion.context
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import timber.log.Timber
-import java.nio.ByteBuffer
 
 class BLEService {
 
@@ -28,14 +25,18 @@ class BLEService {
     val bluetoothState: Flow<BluetoothState> get() = _bluetoothState
 
 
+    fun init() {
+        bluetoothClient.release()
+        bluetoothClient =
+            BluetoothClient(context, ClientType.BLE, null)
+    }
+
     fun checkBlueToothIsOpen(): Boolean {
         return bluetoothClient.checkState() != ClientState.DISABLE
     }
 
     fun startScan() {
-        bluetoothClient.release()
-        bluetoothClient =
-            BluetoothClient(context, ClientType.BLE, null)
+        init()
         _bluetoothState.update { it.copy(devices = emptyList(), scanState = ScanState.Scanning) }
         bluetoothClient.startScan(5000, onEndScan = {
             _bluetoothState.update { it.copy(scanState = ScanState.Done) }
@@ -63,7 +64,7 @@ class BLEService {
                     bluetoothClient.supportedServices()?.let {
                         it.forEach { service ->
                             Timber.tag(TAG).d("%s", service)
-                            service.characteristics?.forEach() { characteristic ->
+                            service.characteristics?.forEach { characteristic ->
                                 if (characteristic.properties.contains(Characteristic.Property.NOTIFY)
                                 ) {
                                     bluetoothClient.assignService(service)
@@ -100,34 +101,22 @@ class BLEService {
 
     fun disconnect() {
         bluetoothClient.disconnect()
+        _bluetoothState.update {
+            it.copy(
+                connectedDevice = null,
+                services = null,
+                service = null,
+                receiveCharacteristic = null
+            )
+        }
     }
 
     fun receiveData() {
         bluetoothClient.receiveData(_bluetoothState.value.receiveCharacteristic!!.uuid) { data ->
-
             Timber.tag(TAG).d("receiveData: ${data.toString(Charsets.US_ASCII)}")
         }
     }
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
-fun ByteArray.toHex(): String =
-    asUByteArray().joinToString("") { it.toString(radix = 16).padStart(2, '0') }
 
-sealed class ScanState {
-    data object Scanning : ScanState()
-    data object Done : ScanState()
-    data object None : ScanState()
-    data object Connected : ScanState()
-}
 
-data class BluetoothState(
-    var scanState: ScanState = ScanState.None,
-    var devices: List<Device> = emptyList(),
-    var connectedDevice: Device? = null,
-    var services: List<Service>? = null,
-    var service: Service? = null,
-    var receiveCharacteristic: Characteristic? = null
-)
-
-val DEFAULT_BLUETOOTH_STATE = BluetoothState()
