@@ -44,13 +44,12 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import io.github.mumu12641.R
 import kotlin.math.ceil
-import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WelcomeScreen(request: () -> Unit) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.welcome))
@@ -114,117 +113,4 @@ fun WelcomePrev() {
     WelcomeScreen {
     }
 }
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun TestChart() {
-    val lines = mutableListOf<LineDataSet>()
-    AndroidView(
-        factory = { context ->
-            LineChart(context).apply {
-                val x = (0..100).map { i -> 0.01f * i }
-                val y = x.map { i -> 5 * sin(7 * i) * sin(0.5f * i) * cos(3.25f * i) }
-                val primaryLine =
-                    LineDataSet(x.zip(y).map { Entry(it.first, it.second) }, "primary")
 
-                primaryLine.setDrawCircles(false)
-                primaryLine.lineWidth = 3f
-                primaryLine.color = android.graphics.Color.RED
-                primaryLine.setDrawValues(false)
-                primaryLine.isHighlightEnabled = false
-
-                val majorX = 1f
-                val majorY = 4f
-                val minorX = majorX / 10
-                val minorY = majorY / 5
-
-                val xMin = floor(x.min() / majorX) * majorX
-                val xMax = ceil(x.max() / majorX) * majorX
-                val yMin = floor(y.min() / majorY) * majorY
-                val yMax = ceil(y.max() / majorY) * majorY
-
-                xGridLines(lines, minorX, yMin, yMax, xMin, xMax, false)
-                yGridLines(lines, minorY, yMin, yMax, xMin, xMax, false)
-
-                xGridLines(lines, majorX, yMin, yMax, xMin, xMax, true)
-                yGridLines(lines, majorY, yMin, yMax, xMin, xMax, true)
-
-                lines.add(primaryLine)
-
-                this.axisRight.isEnabled = false
-                val yAx = this.axisLeft
-                yAx.setDrawLabels(false)
-                yAx.setDrawGridLines(false)
-                yAx.setDrawAxisLine(false)
-                yAx.axisMinimum = yMin
-                yAx.axisMaximum = yMax
-
-                val xAx = this.xAxis
-                xAx.setDrawLabels(false)
-                xAx.position = XAxis.XAxisPosition.BOTTOM
-                xAx.setDrawGridLines(false)
-                xAx.setDrawAxisLine(false)
-                xAx.axisMinimum = xMin
-                xAx.axisMaximum = xMax + 0.01f
-
-                this.data = LineData(lines.toList())
-                this.description.isEnabled = false
-                this.legend.isEnabled = false
-            }
-        },
-        update = {
-        },
-        modifier = Modifier.fillMaxWidth().height(200.dp)
-    )
-
-
-}
-
-private fun yGridLines(
-    lines: MutableList<LineDataSet>,
-    spacing: Float,
-    yMin: Float,
-    yMax: Float,
-    xMin: Float,
-    xMax: Float,
-    major: Boolean
-) {
-    val nY = ((yMax - yMin) / spacing).roundToInt()
-    for (i in 0..nY) {
-        val yl = yMin + i * spacing
-        val ep = listOf(Entry(xMin, yl), Entry(xMax, yl))
-        lines.add(makeGridLineDataSet(ep, major))
-    }
-}
-
-private fun xGridLines(
-    lines: MutableList<LineDataSet>,
-    spacing: Float,
-    yMin: Float,
-    yMax: Float,
-    xMin: Float,
-    xMax: Float,
-    major: Boolean
-) {
-    val nX = ((xMax - xMin) / spacing).roundToInt()
-    for (i in 0..nX) {
-        val xl = xMin + i * spacing
-        val ep = listOf(Entry(xl, yMin), Entry(xl, yMax))
-        lines.add(makeGridLineDataSet(ep, major))
-    }
-}
-
-private fun makeGridLineDataSet(e: List<Entry>, major: Boolean): LineDataSet {
-    val ds = LineDataSet(e, "")
-    ds.setDrawCircles(false)
-    if (major) {
-        ds.color = android.graphics.Color.BLACK
-        ds.lineWidth = 1f
-    } else {
-        ds.color = android.graphics.Color.BLACK
-        ds.lineWidth = 0.5f
-        ds.enableDashedLine(10f, 10f, 0f)
-    }
-    ds.setDrawValues(false)
-    ds.isHighlightEnabled = false
-    return ds
-}

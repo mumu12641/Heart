@@ -7,4 +7,6 @@
     <string name="empty_device">No device found</string>
     <string name="scanning">Scanning</string>
     <string name="scanned">" devices found"</string>
+    <string name="bluetooth_devices" translatable="false">Bluetooth devices</string>
+    <string name="ecg_data" translatable="false">ECG data</string>
 </resources>

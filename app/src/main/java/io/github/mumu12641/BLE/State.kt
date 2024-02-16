@@ -17,7 +17,9 @@ data class BluetoothState(
     var connectedDevice: Device? = null,
     var services: List<Service>? = null,
     var service: Service? = null,
-    var receiveCharacteristic: Characteristic? = null
+    var receiveCharacteristic: Characteristic? = null,
+    var fetching: Boolean = false,
+    var ecgData: MutableList<Float> = MutableList(100) { 0f }
 )
 
 val DEFAULT_BLUETOOTH_STATE = BluetoothState()

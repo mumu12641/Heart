@@ -1,5 +1,6 @@
 package io.github.mumu12641.BLE
 
+import android.util.Log
 import com.zhzc0x.bluetooth.BluetoothClient
 import com.zhzc0x.bluetooth.client.Characteristic
 import com.zhzc0x.bluetooth.client.ClientState
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import timber.log.Timber
+import kotlin.random.Random
 
 class BLEService {
 
@@ -37,7 +39,12 @@ class BLEService {
 
     fun startScan() {
         init()
-        _bluetoothState.update { it.copy(devices = emptyList(), scanState = ScanState.Scanning) }
+        _bluetoothState.update {
+            it.copy(
+                devices = emptyList(), scanState = ScanState.Scanning,
+                fetching = false
+            )
+        }
         bluetoothClient.startScan(5000, onEndScan = {
             _bluetoothState.update { it.copy(scanState = ScanState.Done) }
         }) {
@@ -71,7 +78,9 @@ class BLEService {
                                     _bluetoothState.update {
                                         it.copy(
                                             service = service,
-                                            receiveCharacteristic = characteristic
+                                            receiveCharacteristic = characteristic,
+
+                                            fetching = false
                                         )
                                     }
                                 }
@@ -106,13 +115,17 @@ class BLEService {
                 connectedDevice = null,
                 services = null,
                 service = null,
-                receiveCharacteristic = null
+                receiveCharacteristic = null,
+                fetching = false
             )
         }
     }
 
     fun receiveData() {
         bluetoothClient.receiveData(_bluetoothState.value.receiveCharacteristic!!.uuid) { data ->
+            _bluetoothState.value.fetching = true
+            _bluetoothState.value.ecgData.add(0,(Random.nextFloat() - 0.5f) * 100)
+            Log.d(TAG, "receiveData: ${_bluetoothState.value.ecgData}")
             Timber.tag(TAG).d("receiveData: ${data.toString(Charsets.US_ASCII)}")
         }
     }

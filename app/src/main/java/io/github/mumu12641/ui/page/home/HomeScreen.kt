@@ -1,11 +1,14 @@
 package io.github.mumu12641.ui.page.home
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zhzc0x.bluetooth.client.Device
@@ -107,6 +111,12 @@ fun HomeContent(
     val scanState = uiState.bluetoothState.scanState
     val connectedDevice = uiState.bluetoothState.connectedDevice
     val logs = uiState.logs
+    val fetching = uiState.bluetoothState.fetching
+    val data = uiState.bluetoothState.ecgData
+    val title by animateIntAsState(
+        if (fetching) R.string.ecg_data else R.string.bluetooth_devices,
+        label = ""
+    )
 
     val corner by animateDpAsState(
         if (devices.isEmpty()) 32.dp else 0.dp, label = ""
@@ -125,14 +135,35 @@ fun HomeContent(
         }
 
         Text(
-            text = "bluetooth devices",
+            text = stringResource(id = title),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp, horizontal = 6.dp),
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.labelLarge
         )
+        AnimatedContent(targetState = fetching, label = "") { fetching ->
+            if (fetching) EcgChart(data) else
+                SearchingDevices(
+                    corner,
+                    scanState,
+                    devices,
+                    homeViewModel
+                )
+        }
 
+        Logs(logs = logs)
+    }
+}
+
+@Composable
+private fun SearchingDevices(
+    corner: Dp,
+    scanState: ScanState,
+    devices: List<Device>,
+    homeViewModel: HomeViewModel,
+) {
+    Column {
         Row(
             modifier = Modifier
                 .padding(horizontal = 6.dp)
@@ -175,7 +206,6 @@ fun HomeContent(
                     }
                 }
             }
-
         }
         Column {
             AnimatedVisibility(visible = devices.isNotEmpty()) {
@@ -192,19 +222,22 @@ fun HomeContent(
 
                 }
             }
-            AnimatedVisibility(
-                visible = logs.isNotEmpty(),
-                modifier = Modifier.padding(vertical = 8.dp, horizontal = 6.dp),
-            ) {
-                Text(
-                    modifier = Modifier.padding(10.dp),
-                    text = "[${logs.last().times}] ${logs.last().msg}",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
-                )
-            }
-
         }
+    }
+}
+
+@Composable
+private fun ColumnScope.Logs(logs: List<LogInfo>) {
+    AnimatedVisibility(
+        visible = logs.isNotEmpty(),
+        modifier = Modifier.padding(vertical = 8.dp, horizontal = 6.dp),
+    ) {
+        Text(
+            modifier = Modifier.padding(10.dp),
+            text = "[${logs.last().times}] ${logs.last().msg}",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+        )
     }
 }
 
