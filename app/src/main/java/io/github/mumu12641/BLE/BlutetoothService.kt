@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import timber.log.Timber
-import kotlin.random.Random
 
 class BLEService {
 
@@ -124,9 +123,15 @@ class BLEService {
     fun receiveData() {
         bluetoothClient.receiveData(_bluetoothState.value.receiveCharacteristic!!.uuid) { data ->
             _bluetoothState.value.fetching = true
-            _bluetoothState.value.ecgData.add(0,(Random.nextFloat() - 0.5f) * 100)
-            Log.d(TAG, "receiveData: ${_bluetoothState.value.ecgData}")
-            Timber.tag(TAG).d("receiveData: ${data.toString(Charsets.US_ASCII)}")
+//            _bluetoothState.value.ecgData.add(0,(Random.nextFloat() - 0.5f) * 100)
+            val voltageStr = data.toString(Charsets.US_ASCII);
+            val len = voltageStr.length;
+            if (len < 6) {
+                val voltage = voltageStr.substring(0, voltageStr.length - 1).toFloat();
+                _bluetoothState.value.ecgData.add(0, voltage)
+                Log.d(TAG, "receiveData: ${_bluetoothState.value.ecgData}")
+                Timber.tag(TAG).d("Receive Data: ${data.toString(Charsets.US_ASCII)}")
+            }
         }
     }
 }

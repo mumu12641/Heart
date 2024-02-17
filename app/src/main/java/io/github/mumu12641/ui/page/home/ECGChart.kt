@@ -1,13 +1,15 @@
 package io.github.mumu12641.ui.page.home
 
-import android.graphics.Color
-import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -26,86 +28,110 @@ val TAG = "ECGChart"
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun PreviewEcgChart() {
-    EcgChart(data = List(100) { (Random.nextFloat() - 0.5f) * 160 })
+    EcgChart(data = List(100) { (Random.nextInt(2450, 2550).toFloat()) })
 }
 
 @Composable
 fun EcgChart(data: List<Float>) {
     val lines = mutableListOf<LineDataSet>()
-    AndroidView(factory = { context ->
-        LineChart(context).apply {
+    val lineColor = MaterialTheme.colorScheme.onSecondaryContainer.toArgb()
+    val primaryLineColor = MaterialTheme.colorScheme.primary.toArgb()
+    Surface(
+        modifier = Modifier
+            .clip(RoundedCornerShape(32.dp))
+            .background(MaterialTheme.colorScheme.secondaryContainer)
+    ) {
+        AndroidView(factory = { context ->
+            LineChart(context).apply {
 //                val x = (0..100).map { i -> 0.1f * i }
-            val x = (0..100).map { i -> 1f * i }
+                val x = (0..100).map { i -> 1f * i }
 //                val y = x.map { i -> 5 * sin(7 * i) * sin(0.5f * i) * cos(3.25f * i) }
 //                val y = x.map { i -> sin(i) }
 //                val y = List(100) { (Random.nextFloat() - 0.5f) * 100 }
-            val y = List(100) { 0f }
+                val y = List(100) { 0f }
+                val primaryLine =
+                    LineDataSet(x.zip(y).map { Entry(it.first, it.second) }, "primary")
+                primaryLine.apply {
+                    setDrawCircles(false)
+//                lineWidth = 2f
+//                color = Color.RED
+                    setDrawValues(false)
+                    isHighlightEnabled = false
+                }
+                lines.add(primaryLine)
 
+                this.ConfigureGrid(x, lines, lineColor)
+                this.isClickable = true
+
+            }
+        }, update = {
+            val x = (0..100).map { i -> 1f * i }
+            val y = data
             val primaryLine = LineDataSet(x.zip(y).map { Entry(it.first, it.second) }, "primary")
-
             primaryLine.apply {
                 setDrawCircles(false)
                 lineWidth = 2f
-                color = Color.RED
+                color = primaryLineColor
                 setDrawValues(false)
                 isHighlightEnabled = false
             }
-            lines.add(primaryLine)
+            it.apply {
+                this.data.dataSets[0] = primaryLine
+                this.data.notifyDataChanged()
+                notifyDataSetChanged()
+                invalidate()
+            }
+        }, modifier = Modifier
+            .fillMaxWidth()
+            .height(400.dp)
+            .background(MaterialTheme.colorScheme.secondaryContainer)
+            .clip(RoundedCornerShape(32.dp))
+        )
+    }
+}
 
-            val majorX = 10f
-            val majorY = 40f
-            val minorX = majorX / 10
-            val minorY = majorY / 5
+private fun LineChart.ConfigureGrid(
+    x: List<Float>,
+    lines: MutableList<LineDataSet>,
+    lineColor: Int,
+) {
+    val majorX = 10f
+    val majorY = 50f
+    val minorX = majorX / 10
+    val minorY = majorY / 5
 
-            val xMin = floor(x.min() / majorX) * majorX
-            val xMax = ceil(x.max() / majorX) * majorX
-            val yMin = floor(-80 / majorY) * majorY
-            val yMax = ceil(80 / majorY) * majorY
+    val xMin = floor(x.min() / majorX) * majorX
+    val xMax = ceil(x.max() / majorX) * majorX
+    val yMin = floor(2420 / majorY) * majorY
+    val yMax = ceil(2580 / majorY) * majorY
 
-            xGridLines(lines, minorX, yMin, yMax, xMin, xMax, false)
-            yGridLines(lines, minorY, yMin, yMax, xMin, xMax, false)
+    xGridLines(lines, minorX, yMin, yMax, xMin, xMax, false, lineColor)
+    yGridLines(lines, minorY, yMin, yMax, xMin, xMax, false, lineColor)
 
-            xGridLines(lines, majorX, yMin, yMax, xMin, xMax, true)
-            yGridLines(lines, majorY, yMin, yMax, xMin, xMax, true)
+    xGridLines(lines, majorX, yMin, yMax, xMin, xMax, true, lineColor)
+    yGridLines(lines, majorY, yMin, yMax, xMin, xMax, true, lineColor)
 
 
-            this.axisRight.isEnabled = false
-            val yAx = this.axisLeft
-            yAx.setDrawLabels(false)
-            yAx.setDrawGridLines(false)
-            yAx.setDrawAxisLine(false)
-            yAx.axisMinimum = yMin
-            yAx.axisMaximum = yMax
+    this.axisRight.isEnabled = false
+    val yAx = this.axisLeft
+    yAx.setDrawLabels(false)
+    yAx.setDrawGridLines(false)
+    yAx.setDrawAxisLine(false)
+    yAx.axisMinimum = yMin
+    yAx.axisMaximum = yMax
 
-            val xAx = this.xAxis
-            xAx.setDrawLabels(false)
-            xAx.position = XAxis.XAxisPosition.BOTTOM
-            xAx.setDrawGridLines(false)
-            xAx.setDrawAxisLine(false)
-            xAx.axisMinimum = xMin
-            xAx.axisMaximum = xMax + 0.01f
+    val xAx = this.xAxis
+    xAx.setDrawLabels(false)
+    xAx.position = XAxis.XAxisPosition.BOTTOM
+    xAx.setDrawGridLines(false)
+    xAx.setDrawAxisLine(false)
+    xAx.axisMinimum = xMin
+    xAx.axisMaximum = xMax + 0.01f
 
-            this.data = LineData(lines.toList())
-            this.description.isEnabled = false
-            this.legend.isEnabled = false
-        }
-    }, update = {
-        val x = (0..100).map { i -> 1f * i }
-        val y = data
-        val primaryLine = LineDataSet(x.zip(y).map { Entry(it.first, it.second) }, "primary")
-        primaryLine.apply {
-            setDrawCircles(false)
-            lineWidth = 2f
-            color = Color.RED
-            setDrawValues(false)
-            isHighlightEnabled = false
-        }
-        it.data.dataSets[0] = primaryLine
-    }, modifier = Modifier
-        .fillMaxWidth()
-        .height(400.dp)
-        .clip(RoundedCornerShape(32.dp))
-    )
+    this.data = LineData(lines.toList())
+    this.description.isEnabled = false
+    this.legend.isEnabled = false
+    isDragEnabled = true;
 }
 
 private fun yGridLines(
@@ -115,13 +141,14 @@ private fun yGridLines(
     yMax: Float,
     xMin: Float,
     xMax: Float,
-    major: Boolean
+    major: Boolean,
+    lineColor: Int,
 ) {
     val nY = ((yMax - yMin) / spacing).roundToInt()
     for (i in 0..nY) {
         val yl = yMin + i * spacing
         val ep = listOf(Entry(xMin, yl), Entry(xMax, yl))
-        lines.add(makeGridLineDataSet(ep, major))
+        lines.add(makeGridLineDataSet(ep, major, lineColor))
     }
 }
 
@@ -133,24 +160,25 @@ private fun xGridLines(
     yMax: Float,
     xMin: Float,
     xMax: Float,
-    major: Boolean
+    major: Boolean,
+    lineColor: Int,
 ) {
     val nX = ((xMax - xMin) / spacing).roundToInt()
     for (i in 0..nX) {
         val xl = xMin + i * spacing
         val ep = listOf(Entry(xl, yMin), Entry(xl, yMax))
-        lines.add(makeGridLineDataSet(ep, major))
+        lines.add(makeGridLineDataSet(ep, major, lineColor))
     }
 }
 
-private fun makeGridLineDataSet(e: List<Entry>, major: Boolean): LineDataSet {
+private fun makeGridLineDataSet(e: List<Entry>, major: Boolean, lineColor: Int): LineDataSet {
     val ds = LineDataSet(e, "")
     ds.setDrawCircles(false)
     if (major) {
-        ds.color = Color.BLACK
+        ds.color = lineColor
         ds.lineWidth = 1f
     } else {
-        ds.color = Color.BLACK
+        ds.color = lineColor
         ds.lineWidth = 0.5f
         ds.enableDashedLine(10f, 10f, 0f)
     }
