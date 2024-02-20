@@ -50,13 +50,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.zhzc0x.bluetooth.client.Device
 import io.github.mumu12641.BLE.ScanState
 import io.github.mumu12641.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel) {
+fun HomeScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
     val uiState by homeViewModel.uiState.collectAsState()
     val scanState = uiState.bluetoothState.scanState
     val scanning = scanState == ScanState.Scanning

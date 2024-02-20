@@ -12,6 +12,7 @@ import io.github.mumu12641.BLE.BLEService
 import io.github.mumu12641.BLE.BluetoothState
 import io.github.mumu12641.BLE.DEFAULT_BLUETOOTH_STATE
 import io.github.mumu12641.R
+import io.github.mumu12641.data.local.DefaultECGModelRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,10 +25,13 @@ import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor() :
+class HomeViewModel @Inject constructor(
+    private val ecgModelRepository: DefaultECGModelRepository,
+    private val bluetoothService: BLEService
+) :
     ViewModel() {
 
-    private val bluetoothService = BLEService()
+//    private val bluetoothService = BLEService()
     private val _isExpanded = MutableStateFlow(false)
     private val _bluetoothState = bluetoothService.bluetoothState
     private val _logs = MutableStateFlow<List<LogInfo>>(emptyList())
@@ -36,11 +40,11 @@ class HomeViewModel @Inject constructor() :
         combine(
             _isExpanded, _bluetoothState, _logs
         ) { _, bluetoothState, logs ->
-            UiState( bluetoothState, logs)
+            UiState(bluetoothState, logs)
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = UiState( DEFAULT_BLUETOOTH_STATE, emptyList())
+            initialValue = UiState(DEFAULT_BLUETOOTH_STATE, emptyList())
         )
 
     init {

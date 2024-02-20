@@ -1,6 +1,7 @@
 package io.github.mumu12641.ui.page.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,28 +41,16 @@ fun EcgChart(data: List<Float>) {
         modifier = Modifier
             .clip(RoundedCornerShape(32.dp))
             .background(MaterialTheme.colorScheme.secondaryContainer)
+            .clickable { }
     ) {
         AndroidView(factory = { context ->
             LineChart(context).apply {
-//                val x = (0..100).map { i -> 0.1f * i }
                 val x = (0..100).map { i -> 1f * i }
-//                val y = x.map { i -> 5 * sin(7 * i) * sin(0.5f * i) * cos(3.25f * i) }
-//                val y = x.map { i -> sin(i) }
-//                val y = List(100) { (Random.nextFloat() - 0.5f) * 100 }
                 val y = List(100) { 0f }
                 val primaryLine =
                     LineDataSet(x.zip(y).map { Entry(it.first, it.second) }, "primary")
-                primaryLine.apply {
-                    setDrawCircles(false)
-//                lineWidth = 2f
-//                color = Color.RED
-                    setDrawValues(false)
-                    isHighlightEnabled = false
-                }
                 lines.add(primaryLine)
-
                 this.ConfigureGrid(x, lines, lineColor)
-                this.isClickable = true
 
             }
         }, update = {

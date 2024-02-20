@@ -3,6 +3,7 @@ package io.github.mumu12641.ui.page.home
 import android.Manifest
 import android.os.Build
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -11,10 +12,9 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import io.github.mumu12641.ui.page.welcome.WelcomeScreen
 import io.github.mumu12641.util.Route
 
-
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun MainScreen(homeViewModel: HomeViewModel) {
+fun MainScreen() {
 
     val navController = rememberNavController()
     val state =
@@ -50,7 +50,7 @@ fun MainScreen(homeViewModel: HomeViewModel) {
             }
         }
         composable(Route.HOME) {
-            HomeScreen(homeViewModel = homeViewModel)
+            HomeScreen()
         }
     }
 }
