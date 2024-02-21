@@ -31,22 +31,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import io.github.mumu12641.R
-import kotlin.math.ceil
-import kotlin.math.floor
-import kotlin.math.roundToInt
-import kotlin.math.sin
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,7 +51,7 @@ fun WelcomeScreen(request: () -> Unit) {
                 onClick = { request() })
         }
     ) {
-//        TestChart(modifier = Modifier.padding(it))
+
         LazyColumn(modifier = Modifier.padding(it)) {
             item {
                 Row(
@@ -103,6 +92,7 @@ fun WelcomeScreen(request: () -> Unit) {
                 }
             }
         }
+
 
     }
 }

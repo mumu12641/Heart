@@ -11,19 +11,8 @@ import java.util.Date
 data class ECGModel(
     @PrimaryKey val id: Int,
     @ColumnInfo(name = "path") val path: String,
-    @ColumnInfo(name = "time") @TypeConverters(DateConverter::class) val time: Date,
+    @ColumnInfo(name = "time")  val time: String,
     @ColumnInfo(name = "des") val des: String?
 )
 
 
-class DateConverter {
-    @TypeConverter
-    fun fromTimestamp(value: Long?): Date? {
-        return value?.let { Date(it) }
-    }
-
-    @TypeConverter
-    fun dateToTimestamp(date: Date?): Long? {
-        return date?.time?.toLong()
-    }
-}

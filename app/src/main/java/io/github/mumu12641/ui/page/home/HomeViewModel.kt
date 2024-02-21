@@ -1,5 +1,6 @@
 package io.github.mumu12641.ui.page.home
 
+import android.graphics.Bitmap
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
@@ -12,6 +13,10 @@ import io.github.mumu12641.BLE.BluetoothState
 import io.github.mumu12641.BLE.DEFAULT_BLUETOOTH_STATE
 import io.github.mumu12641.R
 import io.github.mumu12641.data.local.DefaultECGModelRepository
+import io.github.mumu12641.data.local.model.ECGModel
+import io.github.mumu12641.util.FileUtil
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -30,6 +35,8 @@ class HomeViewModel @Inject constructor(
     private val bluetoothService: BLEService
 ) :
     ViewModel() {
+
+    private val TAG = "HomeViewModel"
 
     private val _saving = MutableStateFlow(false)
     private val _bluetoothState = bluetoothService.bluetoothState
@@ -113,7 +120,23 @@ class HomeViewModel @Inject constructor(
             _saving.value = true
 
         }
-//        context.filesDir
+    }
+
+    fun saveBitmap(bitmap: Bitmap) {
+        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
+            Timber.tag(TAG).d("Save Error!")
+        }) {
+            val time = SimpleDateFormat.getTimeInstance(
+                SimpleDateFormat.LONG,
+                Locale.getDefault()
+            ).format(System.currentTimeMillis())
+            val path = FileUtil.writeBitmapToFile(bitmap, time)
+            ecgModelRepository.addECG(
+                ECGModel(
+                    0, path, time, null
+                )
+            )
+        }
     }
 }
 

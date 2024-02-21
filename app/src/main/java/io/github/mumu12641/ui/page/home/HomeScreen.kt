@@ -153,7 +153,7 @@ fun HomeContent(
             style = MaterialTheme.typography.labelLarge
         )
         AnimatedContent(targetState = bleState == BLEState.Fetching, label = "") { fetching ->
-            if (fetching) EcgChart(data,saving) else
+            if (fetching) EcgChart(data, saving) { bitmap -> homeViewModel.saveBitmap(bitmap) } else
                 SearchingDevices(
                     corner,
                     bleState,
