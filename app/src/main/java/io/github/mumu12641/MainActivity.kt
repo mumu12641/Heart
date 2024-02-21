@@ -7,10 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.mumu12641.ui.page.home.HomeViewModel
-import io.github.mumu12641.ui.page.home.MainScreen
+import io.github.mumu12641.ui.page.MainScreen
 import io.github.mumu12641.ui.theme.HeartTheme
 import timber.log.Timber
 

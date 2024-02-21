@@ -1,6 +1,5 @@
 package io.github.mumu12641.BLE
 
-import android.util.Log
 import com.zhzc0x.bluetooth.BluetoothClient
 import com.zhzc0x.bluetooth.client.Characteristic
 import com.zhzc0x.bluetooth.client.ClientState
@@ -40,12 +39,12 @@ class BLEService {
         init()
         _bluetoothState.update {
             it.copy(
-                devices = emptyList(), scanState = ScanState.Scanning,
-                fetching = false
-            )
+                devices = emptyList(), bleState = BLEState.Scanning,
+
+                )
         }
         bluetoothClient.startScan(5000, onEndScan = {
-            _bluetoothState.update { it.copy(scanState = ScanState.Done) }
+            _bluetoothState.update { it.copy(bleState = BLEState.Done) }
         }) {
             Timber.tag(TAG).d("startScan: ${it.name}, ${it.address}, ${it.type}")
             if (!_bluetoothState.value.devices.contains(it)) {
@@ -56,7 +55,7 @@ class BLEService {
 
     fun stopScan() {
         bluetoothClient.stopScan()
-        _bluetoothState.update { it.copy(scanState = ScanState.None) }
+        _bluetoothState.update { it.copy(bleState = BLEState.None) }
     }
 
     fun connect(device: Device) {
@@ -78,8 +77,6 @@ class BLEService {
                                         it.copy(
                                             service = service,
                                             receiveCharacteristic = characteristic,
-
-                                            fetching = false
                                         )
                                     }
                                 }
@@ -88,7 +85,7 @@ class BLEService {
                     }
                     _bluetoothState.update {
                         it.copy(
-                            scanState = ScanState.Connected,
+                            bleState = BLEState.Connected,
                             connectedDevice = device,
                             services = bluetoothClient.supportedServices()
                         )
@@ -115,21 +112,19 @@ class BLEService {
                 services = null,
                 service = null,
                 receiveCharacteristic = null,
-                fetching = false
             )
         }
     }
 
     fun receiveData() {
         bluetoothClient.receiveData(_bluetoothState.value.receiveCharacteristic!!.uuid) { data ->
-            _bluetoothState.value.fetching = true
-//            _bluetoothState.value.ecgData.add(0,(Random.nextFloat() - 0.5f) * 100)
+            _bluetoothState.value.bleState = BLEState.Fetching
             val voltageStr = data.toString(Charsets.US_ASCII);
             val len = voltageStr.length;
             if (len < 6) {
                 val voltage = voltageStr.substring(0, voltageStr.length - 1).toFloat();
                 _bluetoothState.value.ecgData.add(0, voltage)
-                Log.d(TAG, "receiveData: ${_bluetoothState.value.ecgData}")
+//                Log.d(TAG, "receiveData: ${_bluetoothState.value.ecgData}")
                 Timber.tag(TAG).d("Receive Data: ${data.toString(Charsets.US_ASCII)}")
             }
         }

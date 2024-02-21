@@ -25,6 +25,7 @@ import androidx.compose.material.icons.outlined.BluetoothDisabled
 import androidx.compose.material.icons.outlined.GetApp
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.StopCircle
@@ -52,15 +53,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.zhzc0x.bluetooth.client.Device
-import io.github.mumu12641.BLE.ScanState
+import io.github.mumu12641.BLE.BLEState
 import io.github.mumu12641.R
+import io.github.mumu12641.ui.component.EcgChart
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
     val uiState by homeViewModel.uiState.collectAsState()
-    val scanState = uiState.bluetoothState.scanState
-    val scanning = scanState == ScanState.Scanning
+    val bleState = uiState.bluetoothState.bleState
+    val scanning = bleState == BLEState.Scanning
     val receiveCharacteristic = uiState.bluetoothState.receiveCharacteristic
 
     Scaffold(topBar = {
@@ -79,8 +81,14 @@ fun HomeScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
     }, floatingActionButton = {
         Column {
             AnimatedVisibility(visible = receiveCharacteristic != null) {
-                FloatingActionButton(onClick = { homeViewModel.receiveData() }) {
-                    Icon(Icons.Outlined.GetApp, contentDescription = null)
+                if (bleState == BLEState.Fetching) {
+                    FloatingActionButton(onClick = { homeViewModel.saveECG() }) {
+                        Icon(Icons.Outlined.Save, contentDescription = null)
+                    }
+                } else {
+                    FloatingActionButton(onClick = { homeViewModel.receiveData() }) {
+                        Icon(Icons.Outlined.GetApp, contentDescription = null)
+                    }
                 }
             }
             FloatingActionButton(
@@ -109,13 +117,14 @@ fun HomeContent(
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
     val devices = uiState.bluetoothState.devices
-    val scanState = uiState.bluetoothState.scanState
+    val bleState = uiState.bluetoothState.bleState
     val connectedDevice = uiState.bluetoothState.connectedDevice
     val logs = uiState.logs
-    val fetching = uiState.bluetoothState.fetching
+    val saving = uiState.saving
     val data = uiState.bluetoothState.ecgData
     val title by animateIntAsState(
-        if (fetching) R.string.ecg_data else R.string.bluetooth_devices,
+        if (bleState == BLEState.Fetching)
+            R.string.ecg_data else R.string.bluetooth_devices,
         label = ""
     )
 
@@ -125,7 +134,7 @@ fun HomeContent(
     Column(
         modifier.padding(horizontal = 10.dp)
     ) {
-        AnimatedVisibility(visible = scanState == ScanState.Connected) {
+        AnimatedVisibility(visible = bleState == BLEState.Connected || bleState == BLEState.Fetching) {
             connectedDevice?.let {
                 ConnectedDevice(
                     it
@@ -143,11 +152,11 @@ fun HomeContent(
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.labelLarge
         )
-        AnimatedContent(targetState = fetching, label = "") { fetching ->
-            if (fetching) EcgChart(data) else
+        AnimatedContent(targetState = bleState == BLEState.Fetching, label = "") { fetching ->
+            if (fetching) EcgChart(data,saving) else
                 SearchingDevices(
                     corner,
-                    scanState,
+                    bleState,
                     devices,
                     homeViewModel
                 )
@@ -160,7 +169,7 @@ fun HomeContent(
 @Composable
 private fun SearchingDevices(
     corner: Dp,
-    scanState: ScanState,
+    scanState: BLEState,
     devices: List<Device>,
     homeViewModel: HomeViewModel,
 ) {
@@ -184,8 +193,8 @@ private fun SearchingDevices(
                     modifier = Modifier
                         .padding(start = 28.dp),
                     text = when (scanState) {
-                        ScanState.Scanning -> stringResource(id = R.string.scanning)
-                        ScanState.None -> stringResource(
+                        BLEState.Scanning -> stringResource(id = R.string.scanning)
+                        BLEState.None -> stringResource(
                             id = R.string.empty_device
                         )
 
@@ -197,7 +206,7 @@ private fun SearchingDevices(
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                 )
                 Column {
-                    AnimatedVisibility(visible = scanState == ScanState.Scanning) {
+                    AnimatedVisibility(visible = scanState == BLEState.Scanning) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(20.dp),
                             color = MaterialTheme.colorScheme.secondary,

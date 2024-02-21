@@ -1,6 +1,5 @@
 package io.github.mumu12641.ui.page.home
 
-import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
@@ -22,6 +21,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,32 +31,35 @@ class HomeViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-//    private val bluetoothService = BLEService()
-    private val _isExpanded = MutableStateFlow(false)
+    private val _saving = MutableStateFlow(false)
     private val _bluetoothState = bluetoothService.bluetoothState
     private val _logs = MutableStateFlow<List<LogInfo>>(emptyList())
 
     val uiState: StateFlow<UiState> =
         combine(
-            _isExpanded, _bluetoothState, _logs
-        ) { _, bluetoothState, logs ->
-            UiState(bluetoothState, logs)
+            _saving, _bluetoothState, _logs
+        ) { saving, bluetoothState, logs ->
+            UiState(saving, bluetoothState, logs)
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = UiState(DEFAULT_BLUETOOTH_STATE, emptyList())
+            initialValue = UiState(false, DEFAULT_BLUETOOTH_STATE, emptyList())
         )
 
     init {
         Timber.plant(object : Timber.Tree() {
+
             private val date = Date()
 
-            @SuppressLint("SimpleDateFormat")
             override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
                 date.time = System.currentTimeMillis()
                 viewModelScope.launch {
+                    val dateFormat = SimpleDateFormat.getTimeInstance(
+                        SimpleDateFormat.DEFAULT,
+                        Locale.getDefault()
+                    )
                     val log = LogInfo(
-                        SimpleDateFormat("HH:mm:ss").format(date.time),
+                        dateFormat.format(date.time),
                         message,
                         priority
                     )
@@ -64,7 +67,7 @@ class HomeViewModel @Inject constructor(
                     ) {
                         _logs.value +=
                             LogInfo(
-                                SimpleDateFormat("HH:mm:ss").format(date.time),
+                                dateFormat.format(date.time),
                                 message,
                                 priority
                             )
@@ -75,9 +78,9 @@ class HomeViewModel @Inject constructor(
 
     }
 
-    fun changeExpanded() {
-        _isExpanded.value = !_isExpanded.value
-    }
+//    fun changeExpanded() {
+//        _isExpanded.value = !_isExpanded.value
+//    }
 
     fun startScan() {
         if (bluetoothService.checkBlueToothIsOpen()) {
@@ -104,10 +107,18 @@ class HomeViewModel @Inject constructor(
     fun receiveData() {
         bluetoothService.receiveData()
     }
+
+    fun saveECG() {
+        if (!_saving.value) {
+            _saving.value = true
+
+        }
+//        context.filesDir
+    }
 }
 
 data class UiState(
-//    var isExpanded: Boolean,
+    var saving: Boolean,
     var bluetoothState: BluetoothState,
     var logs: List<LogInfo>
 )

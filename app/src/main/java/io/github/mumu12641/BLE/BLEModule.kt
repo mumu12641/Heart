@@ -7,7 +7,7 @@ import dagger.hilt.android.components.ViewModelComponent
 
 @Module
 @InstallIn(ViewModelComponent::class)
-object BluetoothModule {
+object BLEModule {
 
     @Provides
     fun provideBLEService(): BLEService {

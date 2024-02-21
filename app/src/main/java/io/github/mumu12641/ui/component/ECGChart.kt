@@ -1,5 +1,7 @@
-package io.github.mumu12641.ui.page.home
+package io.github.mumu12641.ui.component
 
+import android.graphics.Bitmap
+import android.os.Environment
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,21 +21,28 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import io.github.mumu12641.App.Companion.context
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Locale
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
 import kotlin.random.Random
+
 
 val TAG = "ECGChart"
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun PreviewEcgChart() {
-    EcgChart(data = List(100) { (Random.nextInt(2450, 2550).toFloat()) })
+    EcgChart(data = List(100) { (Random.nextInt(2450, 2550).toFloat()) }, false)
 }
 
 @Composable
-fun EcgChart(data: List<Float>) {
+fun EcgChart(data: List<Float>, saving: Boolean) {
     val lines = mutableListOf<LineDataSet>()
     val lineColor = MaterialTheme.colorScheme.onSecondaryContainer.toArgb()
     val primaryLineColor = MaterialTheme.colorScheme.primary.toArgb()
@@ -70,6 +79,18 @@ fun EcgChart(data: List<Float>) {
                 notifyDataSetChanged()
                 invalidate()
             }
+            if (saving) {
+                val time = SimpleDateFormat.getTimeInstance(
+                    SimpleDateFormat.DEFAULT,
+                    Locale.getDefault()
+                ).format(System.currentTimeMillis())
+                it.saveToGallery(time);
+
+//                save(it.chartBitmap)
+//                it.chartBitmap
+//                it.saveToPath(System.currentTimeMillis(),)
+            }
+
         }, modifier = Modifier
             .fillMaxWidth()
             .height(400.dp)
@@ -77,6 +98,26 @@ fun EcgChart(data: List<Float>) {
             .clip(RoundedCornerShape(32.dp))
         )
     }
+}
+
+fun save(bitmap: Bitmap) {
+
+    val directory = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    val file = File(directory, "image.jpg")
+    try {
+        FileOutputStream(file).use { outputStream ->
+            bitmap.compress(
+                Bitmap.CompressFormat.JPEG,
+                100,
+                outputStream
+            )
+        }
+
+    } catch (e: IOException) {
+        e.printStackTrace()
+    }
+
+
 }
 
 private fun LineChart.ConfigureGrid(
