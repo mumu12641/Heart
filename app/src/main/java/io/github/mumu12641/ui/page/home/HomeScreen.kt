@@ -23,13 +23,13 @@ import androidx.compose.material.icons.outlined.Bluetooth
 import androidx.compose.material.icons.outlined.BluetoothConnected
 import androidx.compose.material.icons.outlined.BluetoothDisabled
 import androidx.compose.material.icons.outlined.GetApp
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.StopCircle
-import androidx.compose.material3.Badge
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -52,14 +52,16 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.zhzc0x.bluetooth.client.Device
 import io.github.mumu12641.BLE.BLEState
 import io.github.mumu12641.R
 import io.github.mumu12641.ui.component.EcgChart
+import io.github.mumu12641.util.Route.HISTORY
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = hiltViewModel()) {
     val uiState by homeViewModel.uiState.collectAsState()
     val bleState = uiState.bluetoothState.bleState
     val scanning = bleState == BLEState.Scanning
@@ -69,9 +71,30 @@ fun HomeScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
         LargeTopAppBar(modifier = Modifier.padding(horizontal = 8.dp), title = {
             Text(text = stringResource(id = R.string.app_name))
         }, navigationIcon = {
-            Icon(Icons.Outlined.Home, contentDescription = null)
+            IconButton(
+                onClick = { },
+            ) {
+                Icon(
+                    Icons.Outlined.Home,
+                    contentDescription = null,
+                )
+            }
         }, actions = {
-            Icon(Icons.Outlined.Settings, contentDescription = null)
+            IconButton(
+                onClick = { navController.navigate(HISTORY) },
+            ) {
+                Icon(
+                    Icons.Outlined.History,
+                    contentDescription = null,
+                )
+            }
+
+            IconButton(onClick = { navController.navigate(HISTORY) }) {
+                Icon(
+                    Icons.Outlined.Settings,
+                    contentDescription = null,
+                )
+            }
 
         })
     }, content = { paddingValues ->
@@ -350,15 +373,12 @@ private fun DeviceItem(device: Device, isEnd: Boolean, connectDevice: (Device) -
             }
 
         }
-        Badge(
+        IconButton(
+            onClick = { connectDevice(device) },
             modifier = Modifier
                 .padding(end = 20.dp)
-                .clickable { connectDevice(device) },
-            containerColor = MaterialTheme.colorScheme.surfaceTint.copy(alpha = 0.2f),
-            contentColor = MaterialTheme.colorScheme.outline,
-            content = {
-                Icon(Icons.Outlined.Link, contentDescription = null)
-            },
-        )
+        ) {
+            Icon(Icons.Outlined.Link, contentDescription = null)
+        }
     }
 }

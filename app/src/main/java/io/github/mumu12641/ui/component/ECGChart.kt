@@ -80,11 +80,10 @@ fun EcgChart(data: List<Float>, saving: Boolean, saveBitMap: (Bitmap) -> Unit) {
                 if (saving) {
                     saveBitMap(it.chartBitmap)
                 }
-
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(400.dp)
+                .height(300.dp)
                 .background(MaterialTheme.colorScheme.secondaryContainer)
                 .clip(RoundedCornerShape(32.dp))
         )

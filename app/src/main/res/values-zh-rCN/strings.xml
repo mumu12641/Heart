@@ -8,4 +8,6 @@
     <string name="empty_device">未搜寻到设备</string>
     <string name="scanning">扫描中</string>
     <string name="scanned">" 个设备被扫描到"</string>
+    <string name="history">历史记录</string>
+    <string name="no_des">暂无描述</string>
 </resources>

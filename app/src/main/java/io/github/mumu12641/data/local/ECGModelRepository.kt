@@ -9,6 +9,8 @@ interface ECGModelRepository {
     val ecgModels: Flow<List<ECGModel>>
 
     suspend fun addECG(ecgModel: ECGModel)
+
+    suspend fun deleteECG(ecgModel: ECGModel)
 }
 
 class DefaultECGModelRepository @Inject constructor(
@@ -20,5 +22,9 @@ class DefaultECGModelRepository @Inject constructor(
 
     override suspend fun addECG(ecgModel: ECGModel) {
         ecgDao.insertECG(ecgModel)
+    }
+
+    override suspend fun deleteECG(ecgModel: ECGModel) {
+        ecgDao.deleteECG(ecgModel)
     }
 }

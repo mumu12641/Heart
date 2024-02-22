@@ -8,7 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.mumu12641.ui.page.MainScreen
+import io.github.mumu12641.ui.page.Navigation
 import io.github.mumu12641.ui.theme.HeartTheme
 import timber.log.Timber
 
@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxSize()
             ) {
                 HeartTheme {
-                    MainScreen()
+                    Navigation()
                 }
             }
         }

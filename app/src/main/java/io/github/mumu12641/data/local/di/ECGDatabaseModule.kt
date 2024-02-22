@@ -24,9 +24,9 @@ class DatabaseModule {
     @Singleton
     fun provideAppDatabase(@ApplicationContext appContext: Context): ECGDatabase {
         return Room.databaseBuilder(
-            appContext,
-            ECGDatabase::class.java,
-            "ECGModel"
-        ).build()
+            appContext, ECGDatabase::class.java, "ECGModel"
+        )
+//            .fallbackToDestructiveMigration()
+            .build()
     }
 }

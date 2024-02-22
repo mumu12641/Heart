@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+    id("androidx.room")
 }
 
 android {
@@ -49,9 +50,11 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-
 }
 
+room {
+    schemaDirectory("$projectDir/schemas")
+}
 
 dependencies {
 
@@ -110,5 +113,5 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.5.0")
 
     // glide
-    implementation ("com.github.skydoves:landscapist-glide:2.3.1")
+    implementation("com.github.skydoves:landscapist-glide:2.3.1")
 }

@@ -17,6 +17,7 @@ import io.github.mumu12641.data.local.model.ECGModel
 import io.github.mumu12641.util.FileUtil
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -117,33 +118,40 @@ class HomeViewModel @Inject constructor(
 
     fun saveECG() {
         if (!_saving.value) {
+            Timber.tag(TAG).d("Saving ECG...")
             _saving.value = true
-
         }
     }
 
     fun saveBitmap(bitmap: Bitmap) {
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
-            Timber.tag(TAG).d("Save Error!")
+            Timber.tag(TAG).e("Save Error!")
+            _saving.value = false
         }) {
-            val time = SimpleDateFormat.getTimeInstance(
-                SimpleDateFormat.LONG,
+            _saving.value = false
+            val time = SimpleDateFormat(
+                "MM-dd HH:mm:ss",
                 Locale.getDefault()
             ).format(System.currentTimeMillis())
             val path = FileUtil.writeBitmapToFile(bitmap, time)
+            delay(1000)
+            Timber.tag(TAG).d("Save ECG to database")
             ecgModelRepository.addECG(
                 ECGModel(
                     0, path, time, null
                 )
             )
+
         }
     }
-}
 
-data class UiState(
-    var saving: Boolean,
-    var bluetoothState: BluetoothState,
-    var logs: List<LogInfo>
-)
+    data class UiState(
+        var saving: Boolean,
+        var bluetoothState: BluetoothState,
+        var logs: List<LogInfo>
+    )
+
+
+}
 
 data class LogInfo(val times: String, val msg: String, val priority: Int = Log.DEBUG)

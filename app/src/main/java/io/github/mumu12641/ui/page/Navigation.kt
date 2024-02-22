@@ -8,13 +8,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import io.github.mumu12641.ui.page.history.HistoryScreen
 import io.github.mumu12641.ui.page.home.HomeScreen
 import io.github.mumu12641.ui.page.welcome.WelcomeScreen
 import io.github.mumu12641.util.Route
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun MainScreen() {
+fun Navigation() {
 
     val navController = rememberNavController()
     val state =
@@ -62,14 +63,16 @@ fun MainScreen() {
         startDestination = if (!state.allPermissionsGranted) Route.WELCOME else Route.HOME
 //        startDestination = Route.WELCOME
     ) {
-
         composable(Route.WELCOME) {
             WelcomeScreen {
                 state.launchMultiplePermissionRequest()
             }
         }
         composable(Route.HOME) {
-            HomeScreen()
+            HomeScreen(navController)
+        }
+        composable(Route.HISTORY) {
+            HistoryScreen(navController)
         }
     }
 }

@@ -6,8 +6,6 @@ import io.github.mumu12641.App
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 object FileUtil {
     private fun getDirectory() = App.context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
