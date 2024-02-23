@@ -1,7 +1,6 @@
 package io.github.mumu12641.ui.component
 
 import android.graphics.Bitmap
-import android.os.Environment
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,22 +20,20 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import io.github.mumu12641.App.Companion.context
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
 
-val TAG = "ECGChart"
+//val TAG = "ECGChart"
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun PreviewEcgChart() {
-    EcgChart(data = List(100) { (Random.nextInt(2450, 2550).toFloat()) }, false){}
+//    2528
+    EcgChart(data = List(100) { 2530f }, false){}
+//    EcgChart(data = List(100) { (Random.nextInt(2450, 2550).toFloat()) }, false){}
 }
 
 @Composable
@@ -59,11 +56,10 @@ fun EcgChart(data: List<Float>, saving: Boolean, saveBitMap: (Bitmap) -> Unit) {
 
             }
         },
-            update = {
+            update = { it ->
                 val x = (0..100).map { i -> 1f * i }
-                val y = data
                 val primaryLine =
-                    LineDataSet(x.zip(y).map { Entry(it.first, it.second) }, "primary")
+                    LineDataSet(x.zip(data).map { Entry(it.first, it.second) }, "primary")
                 primaryLine.apply {
                     setDrawCircles(false)
                     lineWidth = 2f
@@ -104,8 +100,14 @@ private fun LineChart.ConfigureGrid(
 
     val xMin = floor(x.min() / majorX) * majorX
     val xMax = ceil(x.max() / majorX) * majorX
-    val yMin = floor(2420 / majorY) * majorY
-    val yMax = ceil(2580 / majorY) * majorY
+
+//    val yMin = floor(2420 / majorY) * majorY
+//    val yMax = ceil(2580 / majorY) * majorY
+
+//    val yMin = floor(2420 / majorY) * majorY
+//    val yMax = ceil(2640 / majorY) * majorY
+    val yMin = 2470f
+    val yMax = 2610f
 
     xGridLines(lines, minorX, yMin, yMax, xMin, xMax, false, lineColor)
     yGridLines(lines, minorY, yMin, yMax, xMin, xMax, false, lineColor)
@@ -116,24 +118,24 @@ private fun LineChart.ConfigureGrid(
 
     this.axisRight.isEnabled = false
     val yAx = this.axisLeft
-    yAx.setDrawLabels(false)
-    yAx.setDrawGridLines(false)
-    yAx.setDrawAxisLine(false)
+//    yAx.setDrawLabels(false)
+//    yAx.setDrawGridLines(false)
+//    yAx.setDrawAxisLine(false)
     yAx.axisMinimum = yMin
     yAx.axisMaximum = yMax
 
     val xAx = this.xAxis
-    xAx.setDrawLabels(false)
+//    xAx.setDrawLabels(false)
     xAx.position = XAxis.XAxisPosition.BOTTOM
-    xAx.setDrawGridLines(false)
-    xAx.setDrawAxisLine(false)
+//    xAx.setDrawGridLines(false)
+//    xAx.setDrawAxisLine(false)
     xAx.axisMinimum = xMin
     xAx.axisMaximum = xMax + 0.01f
 
     this.data = LineData(lines.toList())
     this.description.isEnabled = false
     this.legend.isEnabled = false
-    isDragEnabled = true;
+    isDragEnabled = true
 }
 
 private fun yGridLines(

@@ -3,7 +3,6 @@ package io.github.mumu12641.ui.page.history
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,18 +10,17 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -37,10 +35,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.pushpal.jetlime.ItemsList
+import com.pushpal.jetlime.JetLimeColumn
+import com.pushpal.jetlime.JetLimeEvent
+import com.pushpal.jetlime.JetLimeEventDefaults
 import com.skydoves.landscapist.glide.GlideImage
 import io.github.mumu12641.R
 import io.github.mumu12641.data.local.model.ECGModel
-import io.github.mumu12641.util.Route
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,7 +59,7 @@ fun HistoryScreen(
                 scrolledContainerColor = MaterialTheme.colorScheme.background
             ),
             navigationIcon = {
-                IconButton(onClick = { navController.navigate(Route.HOME) }) {
+                IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
                         Icons.AutoMirrored.Outlined.ArrowBack,
                         contentDescription = null,
@@ -79,39 +80,62 @@ fun HistoryContent(modifier: Modifier, historyViewModel: HistoryViewModel) {
     val uiState by historyViewModel.uiState.collectAsState()
     val ecgModels = uiState.ecgModels
     val expandIndex = uiState.expandIndex
-    LazyColumn(modifier = modifier) {
-        for ((index, ecg) in ecgModels.withIndex()) {
-            item {
-                ECGCard(
-                    ecg = ecg,
-                    expandIndex == index,
-                    { historyViewModel.setExpandIndex(index) }) {
-                    historyViewModel.deleteECG(it)
-                }
+    JetLimeColumn(
+        modifier = modifier.padding(horizontal = 10.dp),
+        itemsList = ItemsList(ecgModels),
+        key = { _, item -> item.id },
+//        style = JetLimeDefaults.columnStyle(
+//            contentDistance = 32.dp,
+//            itemSpacing = 16.dp,
+//            lineThickness = 2.dp,
+//            lineBrush = JetLimeDefaults.lineSolidBrush(color = MaterialTheme.colorScheme.primary),
+//        )
+
+    ) { index, ecg, position ->
+        JetLimeEvent(
+            style = JetLimeEventDefaults.eventStyle(
+                position = position,
+            ),
+        ) {
+            ECGCard(ecg = ecg, expandIndex == index, { historyViewModel.setExpandIndex(index) }) {
+                historyViewModel.deleteECG(it)
             }
         }
     }
+
+//    LazyColumn(modifier = modifier) {
+//        for ((index, ecg) in ecgModels.withIndex()) {
+//            item {
+//                ECGCard(
+//                    ecg = ecg,
+//                    expandIndex == index,
+//                    { historyViewModel.setExpandIndex(index) }) {
+//                    historyViewModel.deleteECG(it)
+//                }
+//            }
+//        }
+//    }
 }
 
 @Composable
 fun ECGCard(ecg: ECGModel, expand: Boolean, chooseIndex: () -> Unit, delete: (ECGModel) -> Unit) {
-    val height by animateDpAsState(targetValue = if (expand) 260.dp else 125.dp, label = "")
+    val height by animateDpAsState(targetValue = if (expand) 380.dp else 125.dp, label = "")
     val corner by animateDpAsState(targetValue = if (expand) 32.dp else 16.dp, label = "")
-    val imgHeight by animateDpAsState(targetValue = if (expand) 185.dp else 125.dp, label = "")
-    Surface(modifier = Modifier
-        .padding(horizontal = 10.dp, vertical = 5.dp)
+    val imgHeight by animateDpAsState(targetValue = if (expand) 300.dp else 125.dp, label = "")
+    Card(modifier = Modifier
+        .padding(vertical = 5.dp)
         .fillMaxWidth()
         .height(height)
         .clip(RoundedCornerShape(corner))
-        .background(MaterialTheme.colorScheme.secondary)
-        .clickable { chooseIndex() }
-    ) {
+        .background(MaterialTheme.colorScheme.secondary),
+        onClick = { chooseIndex() }) {
         Column(verticalArrangement = Arrangement.Center) {
             GlideImage(
-                imageModel = { ecg.path }, modifier = Modifier
+                imageModel = { ecg.path },
+                modifier = Modifier
                     .fillMaxWidth()
                     .height(imgHeight)
-                    .clip(RoundedCornerShape(corner))
+                    .clip(RoundedCornerShape(corner)),
             )
             AnimatedVisibility(visible = expand) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -130,6 +154,7 @@ fun ECGCard(ecg: ECGModel, expand: Boolean, chooseIndex: () -> Unit, delete: (EC
                         )
                         Text(
                             text = ecg.des ?: stringResource(id = R.string.no_des),
+//                            text = ecg.path,
                             color = MaterialTheme.colorScheme.secondary,
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(top = 4.dp)
@@ -143,9 +168,7 @@ fun ECGCard(ecg: ECGModel, expand: Boolean, chooseIndex: () -> Unit, delete: (EC
                         )
                     }
                 }
-
             }
         }
-
     }
 }

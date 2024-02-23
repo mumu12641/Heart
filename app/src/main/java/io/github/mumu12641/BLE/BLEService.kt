@@ -38,10 +38,7 @@ class BLEService {
     fun startScan() {
         init()
         _bluetoothState.update {
-            it.copy(
-                devices = emptyList(), bleState = BLEState.Scanning,
-
-                )
+            it.copy(devices = emptyList(), bleState = BLEState.Scanning,)
         }
         bluetoothClient.startScan(5000, onEndScan = {
             _bluetoothState.update { it.copy(bleState = BLEState.Done) }
@@ -116,16 +113,33 @@ class BLEService {
         }
     }
 
+    fun saveECG() {
+        if (_bluetoothState.value.bleState != BLEState.Saving) {
+            Timber.tag(TAG).d("Saving ECG...")
+            _bluetoothState.value.bleState = BLEState.Saving
+        }
+    }
+
+    fun setStateFetching() {
+        _bluetoothState.value.bleState = BLEState.Fetching
+    }
+
+    fun stopFetch() {
+        _bluetoothState.value.bleState = BLEState.Stop
+    }
+
     fun receiveData() {
         bluetoothClient.receiveData(_bluetoothState.value.receiveCharacteristic!!.uuid) { data ->
-            _bluetoothState.value.bleState = BLEState.Fetching
-            val voltageStr = data.toString(Charsets.US_ASCII);
-            val len = voltageStr.length;
-            if (len < 6) {
-                val voltage = voltageStr.substring(0, voltageStr.length - 1).toFloat();
-                _bluetoothState.value.ecgData.add(0, voltage)
-//                Log.d(TAG, "receiveData: ${_bluetoothState.value.ecgData}")
-                Timber.tag(TAG).d("Receive Data: ${data.toString(Charsets.US_ASCII)}")
+            if (_bluetoothState.value.bleState != BLEState.Stop) {
+                _bluetoothState.value.bleState = BLEState.Fetching
+                val voltageStr = data.toString(Charsets.US_ASCII)
+                val len = voltageStr.length
+                if (len < 6) {
+                    val voltage = voltageStr.substring(0, voltageStr.length - 1).toFloat()
+                    _bluetoothState.value.ecgData.add(0, voltage)
+                    Timber.tag(TAG).d("Receive Data: ${data.toString(Charsets.US_ASCII)}")
+
+                }
             }
         }
     }

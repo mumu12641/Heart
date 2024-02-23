@@ -66,6 +66,8 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = hilt
     val bleState = uiState.bluetoothState.bleState
     val scanning = bleState == BLEState.Scanning
     val receiveCharacteristic = uiState.bluetoothState.receiveCharacteristic
+    val running =
+        bleState == BLEState.Fetching || bleState == BLEState.Stop || bleState == BLEState.Saving
 
     Scaffold(topBar = {
         LargeTopAppBar(modifier = Modifier.padding(horizontal = 8.dp), title = {
@@ -104,7 +106,7 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = hilt
     }, floatingActionButton = {
         Column {
             AnimatedVisibility(visible = receiveCharacteristic != null) {
-                if (bleState == BLEState.Fetching) {
+                if (running) {
                     FloatingActionButton(onClick = { homeViewModel.saveECG() }) {
                         Icon(Icons.Outlined.Save, contentDescription = null)
                     }
@@ -143,10 +145,11 @@ fun HomeContent(
     val bleState = uiState.bluetoothState.bleState
     val connectedDevice = uiState.bluetoothState.connectedDevice
     val logs = uiState.logs
-    val saving = uiState.saving
+    val saving = uiState.bluetoothState.bleState == BLEState.Saving
     val data = uiState.bluetoothState.ecgData
+    val running = bleState == BLEState.Fetching || bleState == BLEState.Stop || saving
     val title by animateIntAsState(
-        if (bleState == BLEState.Fetching)
+        if (running)
             R.string.ecg_data else R.string.bluetooth_devices,
         label = ""
     )
@@ -157,7 +160,7 @@ fun HomeContent(
     Column(
         modifier.padding(horizontal = 10.dp)
     ) {
-        AnimatedVisibility(visible = bleState == BLEState.Connected || bleState == BLEState.Fetching) {
+        AnimatedVisibility(visible = bleState != BLEState.None || bleState != BLEState.Scanning) {
             connectedDevice?.let {
                 ConnectedDevice(
                     it
@@ -175,8 +178,11 @@ fun HomeContent(
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.labelLarge
         )
-        AnimatedContent(targetState = bleState == BLEState.Fetching, label = "") { fetching ->
-            if (fetching) EcgChart(data, saving) { bitmap -> homeViewModel.saveBitmap(bitmap) } else
+        AnimatedContent(
+            targetState = running,
+            label = ""
+        ) { running ->
+            if (running) EcgChart(data, saving) { bitmap -> homeViewModel.saveBitmap(bitmap) } else
                 SearchingDevices(
                     corner,
                     bleState,

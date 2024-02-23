@@ -4,6 +4,7 @@ plugins {
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
     id("androidx.room")
+    id("com.mikepenz.aboutlibraries.plugin")
 }
 
 android {
@@ -114,4 +115,11 @@ dependencies {
 
     // glide
     implementation("com.github.skydoves:landscapist-glide:2.3.1")
+
+    // about libraries
+    implementation ("com.mikepenz:aboutlibraries-core:10.10.0")
+    implementation ("com.mikepenz:aboutlibraries-compose-m3:10.10.0")
+
+    // timeline
+    implementation("io.github.pushpalroy:jetlime:2.1.0")
 }

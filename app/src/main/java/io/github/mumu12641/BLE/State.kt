@@ -5,13 +5,14 @@ import com.zhzc0x.bluetooth.client.Device
 import com.zhzc0x.bluetooth.client.Service
 
 sealed class BLEState {
-    data object Scanning : BLEState()
 
-    data object Done : BLEState()
     data object None : BLEState()
+    data object Scanning : BLEState()
+    data object Done : BLEState()
     data object Connected : BLEState()
-
     data object Fetching : BLEState()
+    data object Saving : BLEState()
+    data object Stop : BLEState()
 }
 
 data class BluetoothState(
@@ -21,7 +22,6 @@ data class BluetoothState(
     var services: List<Service>? = null,
     var service: Service? = null,
     var receiveCharacteristic: Characteristic? = null,
-//    var fetching: Boolean = false,
     var ecgData: MutableList<Float> = MutableList(100) { 0f }
 )
 

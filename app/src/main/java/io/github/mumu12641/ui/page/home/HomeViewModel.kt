@@ -39,19 +39,19 @@ class HomeViewModel @Inject constructor(
 
     private val TAG = "HomeViewModel"
 
-    private val _saving = MutableStateFlow(false)
+    //    private val _saving = MutableStateFlow(false)
     private val _bluetoothState = bluetoothService.bluetoothState
     private val _logs = MutableStateFlow<List<LogInfo>>(emptyList())
 
     val uiState: StateFlow<UiState> =
         combine(
-            _saving, _bluetoothState, _logs
-        ) { saving, bluetoothState, logs ->
-            UiState(saving, bluetoothState, logs)
+            _bluetoothState, _logs
+        ) { bluetoothState, logs ->
+            UiState(bluetoothState, logs)
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = UiState(false, DEFAULT_BLUETOOTH_STATE, emptyList())
+            initialValue = UiState(DEFAULT_BLUETOOTH_STATE, emptyList())
         )
 
     init {
@@ -117,18 +117,17 @@ class HomeViewModel @Inject constructor(
     }
 
     fun saveECG() {
-        if (!_saving.value) {
-            Timber.tag(TAG).d("Saving ECG...")
-            _saving.value = true
-        }
+        bluetoothService.saveECG()
     }
 
     fun saveBitmap(bitmap: Bitmap) {
         viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
             Timber.tag(TAG).e("Save Error!")
-            _saving.value = false
+//            _saving.value = false
+            bluetoothService.stopFetch()
         }) {
-            _saving.value = false
+//            bluetoothService.setStateFetching()
+            bluetoothService.stopFetch()
             val time = SimpleDateFormat(
                 "MM-dd HH:mm:ss",
                 Locale.getDefault()
@@ -141,12 +140,12 @@ class HomeViewModel @Inject constructor(
                     0, path, time, null
                 )
             )
-
+            bluetoothService.setStateFetching()
         }
     }
 
     data class UiState(
-        var saving: Boolean,
+//        var saving: Boolean,
         var bluetoothState: BluetoothState,
         var logs: List<LogInfo>
     )
