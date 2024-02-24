@@ -24,11 +24,10 @@ import androidx.compose.material.icons.outlined.BluetoothConnected
 import androidx.compose.material.icons.outlined.BluetoothDisabled
 import androidx.compose.material.icons.outlined.GetApp
 import androidx.compose.material.icons.outlined.History
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.StopCircle
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -57,6 +56,7 @@ import com.zhzc0x.bluetooth.client.Device
 import io.github.mumu12641.BLE.BLEState
 import io.github.mumu12641.R
 import io.github.mumu12641.ui.component.EcgChart
+import io.github.mumu12641.util.Route
 import io.github.mumu12641.util.Route.HISTORY
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,10 +74,10 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = hilt
             Text(text = stringResource(id = R.string.app_name))
         }, navigationIcon = {
             IconButton(
-                onClick = { },
+                onClick = { navController.navigate(Route.PROFILE) },
             ) {
                 Icon(
-                    Icons.Outlined.Home,
+                    Icons.Outlined.Person,
                     contentDescription = null,
                 )
             }
@@ -87,13 +87,6 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = hilt
             ) {
                 Icon(
                     Icons.Outlined.History,
-                    contentDescription = null,
-                )
-            }
-
-            IconButton(onClick = { navController.navigate(HISTORY) }) {
-                Icon(
-                    Icons.Outlined.Settings,
                     contentDescription = null,
                 )
             }

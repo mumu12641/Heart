@@ -11,4 +11,14 @@
     <string name="ecg_data" translatable="false">ECG data</string>
     <string name="history">History</string>
     <string name="no_des">No description yet</string>
+    <string name="profile">Profile</string>
+    <string name="name">Name</string>
+    <string name="age">Age</string>
+    <string name="personal_info">Personnal information</string>
+    <string name="health_condition">Health condition</string>
+    <string name="bmi" translatable="false">BMI</string>
+    <string name="smoking_age">Smoking age</string>
+    <string name="smoking_frequency">Smoking frequency</string>
+    <string name="genetic_disease">Family genetic disease</string>
+    <string name="own_disease">Own diseases</string>
 </resources>

@@ -84,13 +84,6 @@ fun HistoryContent(modifier: Modifier, historyViewModel: HistoryViewModel) {
         modifier = modifier.padding(horizontal = 10.dp),
         itemsList = ItemsList(ecgModels),
         key = { _, item -> item.id },
-//        style = JetLimeDefaults.columnStyle(
-//            contentDistance = 32.dp,
-//            itemSpacing = 16.dp,
-//            lineThickness = 2.dp,
-//            lineBrush = JetLimeDefaults.lineSolidBrush(color = MaterialTheme.colorScheme.primary),
-//        )
-
     ) { index, ecg, position ->
         JetLimeEvent(
             style = JetLimeEventDefaults.eventStyle(
@@ -127,7 +120,7 @@ fun ECGCard(ecg: ECGModel, expand: Boolean, chooseIndex: () -> Unit, delete: (EC
         .fillMaxWidth()
         .height(height)
         .clip(RoundedCornerShape(corner))
-        .background(MaterialTheme.colorScheme.secondary),
+        ,
         onClick = { chooseIndex() }) {
         Column(verticalArrangement = Arrangement.Center) {
             GlideImage(

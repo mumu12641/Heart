@@ -5,6 +5,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("androidx.room")
     id("com.mikepenz.aboutlibraries.plugin")
+
 }
 
 android {
@@ -117,9 +118,15 @@ dependencies {
     implementation("com.github.skydoves:landscapist-glide:2.3.1")
 
     // about libraries
-    implementation ("com.mikepenz:aboutlibraries-core:10.10.0")
-    implementation ("com.mikepenz:aboutlibraries-compose-m3:10.10.0")
+    implementation("com.mikepenz:aboutlibraries-core:10.10.0")
+    implementation("com.mikepenz:aboutlibraries-compose-m3:10.10.0")
 
     // timeline
     implementation("io.github.pushpalroy:jetlime:2.1.0")
+
+    // datastore
+    implementation("androidx.datastore:datastore:1.0.0")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("com.google.protobuf:protobuf-javalite:3.21.5")
+    implementation("com.google.protobuf:protobuf-kotlin-lite:3.21.5")
 }

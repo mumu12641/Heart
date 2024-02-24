@@ -10,6 +10,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import io.github.mumu12641.ui.page.history.HistoryScreen
 import io.github.mumu12641.ui.page.home.HomeScreen
+import io.github.mumu12641.ui.page.profile.ProfileScreen
 import io.github.mumu12641.ui.page.welcome.WelcomeScreen
 import io.github.mumu12641.util.Route
 
@@ -72,6 +73,9 @@ fun Navigation() {
         }
         composable(Route.HISTORY) {
             HistoryScreen(navController)
+        }
+        composable(Route.PROFILE) {
+            ProfileScreen(navController)
         }
     }
 }

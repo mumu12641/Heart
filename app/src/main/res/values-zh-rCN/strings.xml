@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Heart</string>
     <string name="welcome">欢迎</string>
     <string name="welcome_tip">该软件将获取手机蓝牙权限，并收集您的个人信息</string>
     <string name="agree_continue">同意并继续</string>
@@ -10,4 +9,13 @@
     <string name="scanned">" 个设备被扫描到"</string>
     <string name="history">历史记录</string>
     <string name="no_des">暂无描述</string>
+    <string name="profile">用户信息</string>
+    <string name="name">姓名</string>
+    <string name="age">年龄</string>
+    <string name="personal_info">个人信息</string>
+    <string name="health_condition">健康情况</string>
+    <string name="smoking_age">烟龄</string>
+    <string name="smoking_frequency">吸烟频率</string>
+    <string name="genetic_disease">家族遗传病</string>
+    <string name="own_disease">自身疾病</string>
 </resources>

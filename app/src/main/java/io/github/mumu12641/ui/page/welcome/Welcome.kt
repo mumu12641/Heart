@@ -53,9 +53,6 @@ fun WelcomeScreen(request: () -> Unit) {
                 onClick = { request() })
         }
     ) {
-//        LibrariesContainer(
-//            Modifier.padding(it).fillMaxSize()
-//        )
         LazyColumn(modifier = Modifier.padding(it)) {
             item {
                 Row(
@@ -104,11 +101,11 @@ fun WelcomeScreen(request: () -> Unit) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun WelcomePrev() {
-//    WelcomeScreen {
-//    }
-    LibrariesContainer(
-        Modifier.fillMaxSize()
-    )
+    WelcomeScreen {
+    }
+//    LibrariesContainer(
+//        Modifier.fillMaxSize()
+//    )
 }
 
 
