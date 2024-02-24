@@ -14,6 +14,6 @@ buildscript {
 
     dependencies {
         classpath("com.google.dagger:hilt-android-gradle-plugin:2.50")
-        classpath ("com.google.protobuf:protobuf-gradle-plugin:0.8.19")
+        classpath("com.google.protobuf:protobuf-gradle-plugin:0.9.4")
     }
 }// Top-level build file where you can add configuration options common to all sub-projects/modules.

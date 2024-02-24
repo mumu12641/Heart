@@ -1,3 +1,5 @@
+import com.google.protobuf.gradle.*
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -6,6 +8,7 @@ plugins {
     id("androidx.room")
     id("com.mikepenz.aboutlibraries.plugin")
 
+    id ("com.google.protobuf")
 }
 
 android {
@@ -52,12 +55,29 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
 }
 
 room {
     schemaDirectory("$projectDir/schemas")
 }
 
+protobuf {
+    protoc {
+        // find latest version number here:
+        // https://mvnrepository.com/artifact/com.google.protobuf/protoc
+        artifact = "com.google.protobuf:protoc:3.25.1"
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.plugins{
+                create("java") {
+                    option("lite")
+                }
+            }
+        }
+    }
+}
 dependencies {
 
     implementation("androidx.core:core-ktx:1.12.0")
@@ -127,6 +147,5 @@ dependencies {
     // datastore
     implementation("androidx.datastore:datastore:1.0.0")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
-    implementation("com.google.protobuf:protobuf-javalite:3.21.5")
-    implementation("com.google.protobuf:protobuf-kotlin-lite:3.21.5")
+    implementation("com.google.protobuf:protobuf-javalite:3.25.1")
 }
