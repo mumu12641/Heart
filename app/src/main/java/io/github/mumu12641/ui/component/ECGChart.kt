@@ -23,7 +23,6 @@ import com.github.mikephil.charting.data.LineDataSet
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
-import kotlin.random.Random
 
 
 //val TAG = "ECGChart"
@@ -32,7 +31,7 @@ import kotlin.random.Random
 @Composable
 fun PreviewEcgChart() {
 //    2528
-    EcgChart(data = List(100) { 2530f }, false){}
+    EcgChart(data = List(100) { 2530f }, false) {}
 //    EcgChart(data = List(100) { (Random.nextInt(2450, 2550).toFloat()) }, false){}
 }
 
@@ -45,17 +44,18 @@ fun EcgChart(data: List<Float>, saving: Boolean, saveBitMap: (Bitmap) -> Unit) {
         .clip(RoundedCornerShape(32.dp))
         .background(MaterialTheme.colorScheme.secondaryContainer)
         .clickable { }) {
-        AndroidView(factory = { context ->
-            LineChart(context).apply {
-                val x = (0..100).map { i -> 1f * i }
-                val y = List(100) { 0f }
-                val primaryLine =
-                    LineDataSet(x.zip(y).map { Entry(it.first, it.second) }, "primary")
-                lines.add(primaryLine)
-                this.ConfigureGrid(x, lines, lineColor)
+        AndroidView(
+            factory = { context ->
+                LineChart(context).apply {
+                    val x = (0..100).map { i -> 1f * i }
+                    val y = List(100) { 0f }
+                    val primaryLine =
+                        LineDataSet(x.zip(y).map { Entry(it.first, it.second) }, "primary")
+                    lines.add(primaryLine)
+                    this.ConfigureGrid(x, lines, lineColor)
 
-            }
-        },
+                }
+            },
             update = { it ->
                 val x = (0..100).map { i -> 1f * i }
                 val primaryLine =
@@ -85,7 +85,6 @@ fun EcgChart(data: List<Float>, saving: Boolean, saveBitMap: (Bitmap) -> Unit) {
         )
     }
 }
-
 
 
 private fun LineChart.ConfigureGrid(

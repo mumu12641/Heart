@@ -1,6 +1,5 @@
 package io.github.mumu12641.data.local.database
 
-import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import io.github.mumu12641.data.local.dao.ECGDao

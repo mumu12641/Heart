@@ -15,7 +15,7 @@ object FileUtil {
         getDirectory(), name
     )
 
-    fun writeBitmapToFile(bitmap: Bitmap,time:String): String {
+    fun writeBitmapToFile(bitmap: Bitmap, time: String): String {
         val file = createFile("$time.jpg")
         FileOutputStream(file).use { outputStream ->
             bitmap.compress(

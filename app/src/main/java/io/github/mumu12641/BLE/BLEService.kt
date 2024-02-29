@@ -38,7 +38,7 @@ class BLEService {
     fun startScan() {
         init()
         _bluetoothState.update {
-            it.copy(devices = emptyList(), bleState = BLEState.Scanning,)
+            it.copy(devices = emptyList(), bleState = BLEState.Scanning)
         }
         bluetoothClient.startScan(5000, onEndScan = {
             _bluetoothState.update { it.copy(bleState = BLEState.Done) }

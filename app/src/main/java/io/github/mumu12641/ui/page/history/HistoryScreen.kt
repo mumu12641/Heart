@@ -2,7 +2,6 @@ package io.github.mumu12641.ui.page.history
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -119,8 +118,7 @@ fun ECGCard(ecg: ECGModel, expand: Boolean, chooseIndex: () -> Unit, delete: (EC
         .padding(vertical = 5.dp)
         .fillMaxWidth()
         .height(height)
-        .clip(RoundedCornerShape(corner))
-        ,
+        .clip(RoundedCornerShape(corner)),
         onClick = { chooseIndex() }) {
         Column(verticalArrangement = Arrangement.Center) {
             GlideImage(

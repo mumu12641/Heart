@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Save
@@ -21,15 +20,15 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -70,46 +69,46 @@ fun ProfileScreen(
         )
     }, floatingActionButton = {
         FloatingActionButton(
-            onClick = { /*TODO*/ },
+            onClick = { profileViewModel.saveUserProfile() },
             modifier = Modifier.padding(bottom = 18.dp),
         ) {
             Icon(Icons.Outlined.Save, contentDescription = null)
         }
     }) {
-        ProfileContent(modifier = Modifier.padding(it))
+        ProfileContent(modifier = Modifier.padding(it), profileViewModel)
     }
-
 }
 
 
 @Composable
-fun ProfileContent(modifier: Modifier) {
-
-
+fun ProfileContent(modifier: Modifier, profileViewModel: ProfileViewModel) {
+    val userProfile by profileViewModel.userProfileFlow.collectAsState(initial = EMPTY_USER_PROFILE)
+    LaunchedEffect(userProfile) {
+        profileViewModel.initUserProfile()
+    }
     LazyColumn(
         modifier.padding(horizontal = 10.dp),
-
-        ) {
+    ) {
         item {
-            PersonalInfoCard()
+            PersonalInfoCard(profileViewModel)
         }
         item {
-            OwnDiseaseCard()
-
+            OwnDiseaseCard(profileViewModel)
         }
         item {
-            GeneticDiseaseCard()
+            GeneticDiseaseCard(profileViewModel)
         }
     }
 
 }
 
 @Composable
-private fun OwnDiseaseCard() {
+private fun OwnDiseaseCard(profileViewModel: ProfileViewModel) {
+    val uiState by profileViewModel.uiState.collectAsState()
+
     Card(
         onClick = { },
         modifier = Modifier
-            .clip(RoundedCornerShape(24.dp))
             .padding(bottom = 16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(
@@ -130,26 +129,30 @@ private fun OwnDiseaseCard() {
                 Spacer(modifier = Modifier.weight(1f))
             }
             Row {
-                FilterChip(selected = false, modifier = Modifier.padding(horizontal = 4.dp),
-                    onClick = { /*TODO*/ },
+                FilterChip(selected = uiState.hyperlipidemia,
+                    modifier = Modifier.padding(horizontal = 4.dp),
+                    onClick = { profileViewModel.changeHyperlipidemia() },
                     label = { Text(text = "高脂血症") })
                 FilterChip(
                     modifier = Modifier.padding(horizontal = 4.dp),
-                    selected = false,
-                    onClick = { /*TODO*/ },
+                    selected = uiState.diabetes,
+                    onClick = { profileViewModel.changeDiabetes() },
                     label = { Text(text = "糖尿病") })
 
-                FilterChip(selected = false, modifier = Modifier.padding(horizontal = 4.dp),
-                    onClick = { /*TODO*/ },
+                FilterChip(selected = uiState.hypertension,
+                    modifier = Modifier.padding(horizontal = 4.dp),
+                    onClick = { profileViewModel.changeHypertension() },
                     label = { Text(text = "高血压") })
 
             }
             Row {
-                FilterChip(selected = false, modifier = Modifier.padding(horizontal = 4.dp),
-                    onClick = { /*TODO*/ },
+                FilterChip(selected = uiState.atrialFibrillationValvularHeartDisease,
+                    modifier = Modifier.padding(horizontal = 4.dp),
+                    onClick = { profileViewModel.changeAtrialFibrillationValvularHeartDisease() },
                     label = { Text(text = "房颤心脏瓣膜病") })
-                FilterChip(selected = false, modifier = Modifier.padding(horizontal = 4.dp),
-                    onClick = { /*TODO*/ },
+                FilterChip(selected = uiState.coronaryHeartDiseaseAcuteCoronarySyndrome,
+                    modifier = Modifier.padding(horizontal = 4.dp),
+                    onClick = { profileViewModel.changeCoronaryHeartDiseaseAcuteCoronarySyndrome() },
                     label = { Text(text = "冠心病发生急性冠脉综合征") })
             }
         }
@@ -157,11 +160,11 @@ private fun OwnDiseaseCard() {
 }
 
 @Composable
-private fun GeneticDiseaseCard() {
+private fun GeneticDiseaseCard(profileViewModel: ProfileViewModel) {
+    val uiState by profileViewModel.uiState.collectAsState()
     Card(
         onClick = { },
         modifier = Modifier
-            .clip(RoundedCornerShape(24.dp))
             .padding(bottom = 16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(
@@ -181,14 +184,17 @@ private fun GeneticDiseaseCard() {
                 Spacer(modifier = Modifier.weight(1f))
             }
             Row {
-                FilterChip(selected = false, modifier = Modifier.padding(horizontal = 4.dp),
-                    onClick = { /*TODO*/ },
+                FilterChip(selected = uiState.coronaryHeartDisease,
+                    modifier = Modifier.padding(horizontal = 4.dp),
+                    onClick = { profileViewModel.changeCoronaryHeartDisease() },
                     label = { Text(text = "冠心病") })
-                FilterChip(selected = false, modifier = Modifier.padding(horizontal = 4.dp),
-                    onClick = { /*TODO*/ },
+                FilterChip(selected = uiState.acuteMyocardialInfarction,
+                    modifier = Modifier.padding(horizontal = 4.dp),
+                    onClick = { profileViewModel.changeAcuteMyocardialInfarction() },
                     label = { Text(text = "急性心梗") })
-                FilterChip(selected = false, modifier = Modifier.padding(horizontal = 4.dp),
-                    onClick = { /*TODO*/ },
+                FilterChip(selected = uiState.cerebralPalsy,
+                    modifier = Modifier.padding(horizontal = 4.dp),
+                    onClick = { profileViewModel.changeCerebralPalsy() },
                     label = { Text(text = "脑猝") })
             }
         }
@@ -197,7 +203,9 @@ private fun GeneticDiseaseCard() {
 
 
 @Composable
-private fun PersonalInfoCard() {
+private fun PersonalInfoCard(profileViewModel: ProfileViewModel) {
+    val uiState by profileViewModel.uiState.collectAsState()
+
     val composition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(
             R.raw.profile
@@ -206,7 +214,6 @@ private fun PersonalInfoCard() {
     Card(
         onClick = { },
         modifier = Modifier
-            .clip(RoundedCornerShape(24.dp))
             .padding(bottom = 16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(
@@ -232,43 +239,43 @@ private fun PersonalInfoCard() {
             )
             Row {
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
+                    value = uiState.name,
+                    onValueChange = { profileViewModel.setName(it) },
                     label = { Text(text = stringResource(id = R.string.name)) },
                     modifier = Modifier
                         .weight(1f)
                         .padding(end = 10.dp)
                 )
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
+                    value = uiState.age,
+                    onValueChange = { profileViewModel.setAge(it) },
                     modifier = Modifier.weight(1f),
                     label = { Text(text = stringResource(id = R.string.age)) },
                 )
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
+                    value = uiState.bmi,
+                    onValueChange = { profileViewModel.setBMI(it) },
                     modifier = Modifier
                         .weight(1f)
                         .padding(end = 10.dp),
                     label = { Text(text = stringResource(id = R.string.bmi)) },
                 )
-                SuggestionChip(onClick = { /*TODO*/ }, label = { Text(text = "BMI健康") })
+//                SuggestionChip(onClick = { /*TODO*/ }, label = { Text(text = "BMI健康") })
             }
             Row {
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
+                    value = uiState.smokingAge,
+                    onValueChange = { profileViewModel.setSmokingAge(it) },
                     label = { Text(text = stringResource(id = R.string.smoking_age)) },
                     modifier = Modifier
                         .weight(1f)
                         .padding(end = 10.dp)
                 )
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
+                    value = uiState.smokingFreq,
+                    onValueChange = { profileViewModel.setSmokingFreq(it) },
                     modifier = Modifier.weight(1f),
                     label = { Text(text = stringResource(id = R.string.smoking_frequency)) },
                 )

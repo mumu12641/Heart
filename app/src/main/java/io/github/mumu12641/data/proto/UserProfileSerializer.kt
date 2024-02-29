@@ -1,10 +1,7 @@
 package io.github.mumu12641.data.proto
 
-import android.content.Context
 import androidx.datastore.core.CorruptionException
-import androidx.datastore.core.DataStore
 import androidx.datastore.core.Serializer
-import androidx.datastore.dataStore
 import androidx.datastore.preferences.protobuf.InvalidProtocolBufferException
 import io.github.mumu12641.UserProfile
 import java.io.InputStream
@@ -27,7 +24,3 @@ object UserProfileSerializer : Serializer<UserProfile> {
     ) = t.writeTo(output)
 }
 
-val Context.settingsDataStore: DataStore<UserProfile> by dataStore(
-    fileName = "settings.pb",
-    serializer = UserProfileSerializer
-)

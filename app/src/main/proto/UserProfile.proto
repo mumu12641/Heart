@@ -4,5 +4,16 @@ option java_multiple_files = true;
 
 message UserProfile {
     string name = 1;
-    int32 age = 2;
+    string age = 2;
+    string bmi = 3;
+    string smokingAge = 4;
+    string smokingFreq = 5;
+    bool hyperlipidemia = 6;
+    bool diabetes = 7;
+    bool hypertension = 8;
+    bool atrialFibrillationValvularHeartDisease = 9;
+    bool coronaryHeartDiseaseAcuteCoronarySyndrome = 10;
+    bool coronaryHeartDisease = 11;
+    bool acuteMyocardialInfarction=12;
+    bool cerebralPalsy=13;
 }

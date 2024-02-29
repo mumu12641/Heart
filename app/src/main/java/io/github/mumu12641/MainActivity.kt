@@ -12,8 +12,10 @@ import io.github.mumu12641.ui.page.Navigation
 import io.github.mumu12641.ui.theme.HeartTheme
 import timber.log.Timber
 
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Timber.plant(Timber.DebugTree())
