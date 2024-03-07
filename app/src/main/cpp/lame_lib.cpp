@@ -1,10 +1,11 @@
 #include <jni.h>
-#include "mp3_encoder.h"
+#include "include/mp3_encoder.h"
+#include <string>
 
 Mp3Encoder *encoder;
 
 extern "C" JNIEXPORT jint  JNICALL
-Java_com_baidu_lame_MainActivity_pcmToMp3JNI(
+Java_io_github_mumu12641_MainActivity_pcmToMp3JNI(
         JNIEnv *env,
         jobject,
         jstring pcm_path,
@@ -23,3 +24,9 @@ Java_com_baidu_lame_MainActivity_pcmToMp3JNI(
     env->ReleaseStringUTFChars(mp3_path, mp3Path);
     return 0;
 }
+//extern "C" JNIEXPORT jstring JNICALL
+//Java_io_github_mumu12641_MainActivity_stringFromJNI(JNIEnv* env,
+//                                                 jobject /* this */) {
+//    std::string hello = "Hello from JNI.";
+//    return env->NewStringUTF(hello.c_str());
+//}

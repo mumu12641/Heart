@@ -1,5 +1,5 @@
-#include "mp3_encoder.h"
-#include "lame.h"
+#include "include/mp3_encoder.h"
+#include "include/lame.h"
 
 Mp3Encoder::Mp3Encoder() {
 }

@@ -2,24 +2,24 @@ cmake_minimum_required(VERSION 3.10.2)
 
 # Declares and names the project.
 
-project("native-lib")
+project("lame_lib")
 
 
 include_directories(
         ${CMAKE_SOURCE_DIR}/include/lame)
 
 add_library( # Sets the name of the library.
-        native-lib
+        lame_lib
 
         # Sets the library as a shared library.
         SHARED
 
         # Provides a relative path to your source file(s).
-        native-lib.cpp mp3_encoder.cpp)
+        lame_lib.cpp mp3_encoder.cpp)
 
 add_library(mp3lame STATIC IMPORTED)
 set_target_properties(mp3lame PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libmp3lame.a)
+        ${CMAKE_SOURCE_DIR}/../libs/${ANDROID_ABI}/libmp3lame.a)
 #set_target_properties(mp3lame PROPERTIES IMPORTED_LOCATION
 #        ${CMAKE_SOURCE_DIR}/../jniLibs/arm64-v8a/libmp3lame.a)
 
@@ -30,5 +30,5 @@ find_library( # Sets the name of the path variable.
         # you want CMake to locate.
         log )
 
-target_link_libraries(native-lib
+target_link_libraries(lame_lib
         mp3lame)

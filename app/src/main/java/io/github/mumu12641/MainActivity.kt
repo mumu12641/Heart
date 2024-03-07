@@ -1,6 +1,7 @@
 package io.github.mumu12641
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,13 +32,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    external fun stringFromJNI(): String
     external fun pcmToMp3JNI(pcmPath: String, mp3Path: String,
                              sampleRate: Int, channel: Int, bitRate: Int): Int
 
     companion object {
         init {
-            System.loadLibrary("native-lib")
+            System.loadLibrary("lame_lib")
         }
     }
 
