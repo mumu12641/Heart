@@ -31,4 +31,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    external fun stringFromJNI(): String
+    external fun pcmToMp3JNI(pcmPath: String, mp3Path: String,
+                             sampleRate: Int, channel: Int, bitRate: Int): Int
+
+    companion object {
+        init {
+            System.loadLibrary("native-lib")
+        }
+    }
+
 }

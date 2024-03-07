@@ -8,5 +8,6 @@ https://github.com/HE-SOFT/lame-for-android
 
 https://github.com/kingdavidsun/AudioSampling
 
-https://github.com/hernandazevedo/androidmp3recorder 	https://blog.csdn.net/H_Zhang/article/details/123552513（这个好像最靠谱）
+https://github.com/hernandazevedo/androidmp3recorder 	https://blog.csdn.net/H_Zhang/article/details/123552513
+（这个好像最靠谱）
 
