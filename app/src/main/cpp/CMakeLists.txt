@@ -4,7 +4,6 @@ cmake_minimum_required(VERSION 3.10.2)
 
 project("native-lib")
 
-message("ANDROID_ABI 值是：${ANDROID_ABI}")
 
 include_directories(
         ${CMAKE_SOURCE_DIR}/include/lame)

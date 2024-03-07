@@ -58,3 +58,7 @@ void Mp3Encoder::Destroy() {
         lame_close(lameClient);
     }
 }
+
+Mp3Encoder::~Mp3Encoder() {
+
+}
