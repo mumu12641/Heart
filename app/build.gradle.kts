@@ -77,15 +77,10 @@ android {
         }
     }
     splits {
-
         abi {
-
             isEnable = true
-
             reset()
-
-            include("x86", "x86_64", "arm64-v8a", "armeabi-v7a")
-
+            include("arm64-v8a", "armeabi-v7a")
             isUniversalApk = false
         }
     }
@@ -131,12 +126,12 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     // hilt
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("com.google.dagger:hilt-android:2.50")
     kapt("com.google.dagger:hilt-android-compiler:2.50")
 
     // icons
-    implementation("androidx.compose.material:material-icons-extended:1.6.1")
+    implementation("androidx.compose.material:material-icons-extended:1.6.3")
 
     // navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
