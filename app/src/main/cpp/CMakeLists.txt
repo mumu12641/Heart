@@ -19,7 +19,7 @@ add_library( # Sets the name of the library.
 
 add_library(mp3lame STATIC IMPORTED)
 set_target_properties(mp3lame PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/../libs/${ANDROID_ABI}/libmp3lame.a)
+        ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libmp3lame.a)
 #set_target_properties(mp3lame PROPERTIES IMPORTED_LOCATION
 #        ${CMAKE_SOURCE_DIR}/../jniLibs/arm64-v8a/libmp3lame.a)
 

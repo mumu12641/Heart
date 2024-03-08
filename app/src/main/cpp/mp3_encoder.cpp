@@ -11,6 +11,12 @@ int Mp3Encoder::Init(const char* pcmFilePath, const char* mp3FilePath, int sampl
         mp3File = fopen(mp3FilePath, "wb");
         if (mp3File) {
             lameClient = lame_init();
+
+//            val sampleRate = 44100
+//            val channel = 2
+//            val bitRate = 64000
+//            val frequency = 44100
+
             // in 采样率
             lame_set_in_samplerate(lameClient, sampleRate);
             // out 采样率

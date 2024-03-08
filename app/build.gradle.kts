@@ -6,7 +6,7 @@ plugins {
     id("androidx.room")
     id("com.mikepenz.aboutlibraries.plugin")
 
-    id ("com.google.protobuf")
+    id("com.google.protobuf")
 }
 
 android {
@@ -33,6 +33,24 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            splits {
+                abi {
+                    isEnable = true
+                    reset()
+                    include("armeabi-v7a", "arm64-v8a")
+                    isUniversalApk = false
+                }
+            }
+        }
+        debug {
+            splits {
+                abi {
+                    isEnable = true
+                    reset()
+                    include("armeabi-v7a", "arm64-v8a")
+                    isUniversalApk = false
+                }
+            }
         }
     }
     compileOptions {
@@ -58,6 +76,19 @@ android {
             path = file("src/main/cpp/CMakeLists.txt")
         }
     }
+    splits {
+
+        abi {
+
+            isEnable = true
+
+            reset()
+
+            include("x86", "x86_64", "arm64-v8a", "armeabi-v7a")
+
+            isUniversalApk = false
+        }
+    }
 
 }
 
@@ -67,13 +98,11 @@ room {
 
 protobuf {
     protoc {
-        // find latest version number here:
-        // https://mvnrepository.com/artifact/com.google.protobuf/protoc
         artifact = "com.google.protobuf:protoc:3.25.1"
     }
     generateProtoTasks {
         all().forEach { task ->
-            task.plugins{
+            task.plugins {
                 create("java") {
                     option("lite")
                 }
