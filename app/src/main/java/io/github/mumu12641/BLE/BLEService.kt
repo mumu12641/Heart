@@ -135,7 +135,7 @@ class BLEService {
                 val voltageStr = data.toString(Charsets.US_ASCII)
                 val len = voltageStr.length
                 if (len < 6) {
-                    val voltage = voltageStr.substring(0, voltageStr.length - 1).toFloat()
+                    val voltage = voltageStr.substring(0, voltageStr.length - 1).toInt()
                     _bluetoothState.value.ecgData.add(0, voltage)
                     Timber.tag(TAG).d("Receive Data: ${data.toString(Charsets.US_ASCII)}")
 

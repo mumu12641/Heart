@@ -31,7 +31,7 @@ import kotlin.math.roundToInt
 @Composable
 fun PreviewEcgChart() {
 //    2528
-    EcgChart(data = List(100) { 2530f }, false) {}
+    EcgChart(data = List(256) { 2530f }, false) {}
 //    EcgChart(data = List(100) { (Random.nextInt(2450, 2550).toFloat()) }, false){}
 }
 
@@ -47,8 +47,8 @@ fun EcgChart(data: List<Float>, saving: Boolean, saveBitMap: (Bitmap) -> Unit) {
         AndroidView(
             factory = { context ->
                 LineChart(context).apply {
-                    val x = (0..100).map { i -> 1f * i }
-                    val y = List(100) { 0f }
+                    val x = (0..256).map { i -> 1f * i }
+                    val y = List(256) { 0f }
                     val primaryLine =
                         LineDataSet(x.zip(y).map { Entry(it.first, it.second) }, "primary")
                     lines.add(primaryLine)
@@ -57,7 +57,7 @@ fun EcgChart(data: List<Float>, saving: Boolean, saveBitMap: (Bitmap) -> Unit) {
                 }
             },
             update = { it ->
-                val x = (0..100).map { i -> 1f * i }
+                val x = (0..256).map { i -> 1f * i }
                 val primaryLine =
                     LineDataSet(x.zip(data).map { Entry(it.first, it.second) }, "primary")
                 primaryLine.apply {

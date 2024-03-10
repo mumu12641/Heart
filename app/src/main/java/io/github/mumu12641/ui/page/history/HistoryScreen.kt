@@ -122,7 +122,7 @@ fun ECGCard(ecg: ECGModel, expand: Boolean, chooseIndex: () -> Unit, delete: (EC
         onClick = { chooseIndex() }) {
         Column(verticalArrangement = Arrangement.Center) {
             GlideImage(
-                imageModel = { ecg.path },
+                imageModel = { ecg.jpgPath },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(imgHeight)

@@ -13,11 +13,9 @@ import io.github.mumu12641.BLE.BluetoothState
 import io.github.mumu12641.BLE.DEFAULT_BLUETOOTH_STATE
 import io.github.mumu12641.R
 import io.github.mumu12641.data.local.DefaultECGModelRepository
-import io.github.mumu12641.data.local.model.ECGModel
 import io.github.mumu12641.util.FileUtil
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -126,19 +124,9 @@ class HomeViewModel @Inject constructor(
 //            _saving.value = false
             bluetoothService.stopFetch()
         }) {
-//            bluetoothService.setStateFetching()
             bluetoothService.stopFetch()
-            val time = SimpleDateFormat(
-                "MM-dd HH:mm:ss",
-                Locale.getDefault()
-            ).format(System.currentTimeMillis())
-            val path = FileUtil.writeBitmapToFile(bitmap, time)
-            delay(1000)
-            Timber.tag(TAG).d("Save ECG to database")
             ecgModelRepository.addECG(
-                ECGModel(
-                    0, path, time, null
-                )
+                FileUtil.saveECG(bitmap, uiState.value.bluetoothState.ecgData)
             )
             bluetoothService.setStateFetching()
         }

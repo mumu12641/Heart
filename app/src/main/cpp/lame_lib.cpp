@@ -4,15 +4,17 @@
 
 Mp3Encoder *encoder;
 
-extern "C" JNIEXPORT jint  JNICALL
-Java_io_github_mumu12641_MainActivity_pcmToMp3JNI(
-        JNIEnv *env,
-        jobject,
-        jstring pcm_path,
-        jstring mp3_path,
-        jint sample_rate,
-        jint channel,
-        jint bit_rate) {
+//extern "C" JNIEXPORT jint  JNICALL
+//Java_io_github_mumu12641_MainActivity_pcmToMp3JNI(
+//
+//}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_io_github_mumu12641_util_FileUtil_pcmToMp3JNI(JNIEnv *env, jobject thiz, jstring pcm_path,
+                                                   jstring mp3_path, jint sample_rate, jint channel,
+                                                   jint bit_rate) {
+
     const char *pcmPath = env->GetStringUTFChars(pcm_path, NULL);
     const char *mp3Path = env->GetStringUTFChars(mp3_path, NULL);
 
