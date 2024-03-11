@@ -19,10 +19,11 @@ Java_io_github_mumu12641_util_FileUtil_pcmToMp3JNI(JNIEnv *env, jobject thiz, js
     const char *mp3Path = env->GetStringUTFChars(mp3_path, NULL);
 
     encoder = new Mp3Encoder();
-    encoder->Init(pcmPath, mp3Path, sample_rate, channel, bit_rate);
+    int ret = encoder->Init(pcmPath, mp3Path, sample_rate, channel, bit_rate);
+
     encoder->Encode();
 
     env->ReleaseStringUTFChars(pcm_path, pcmPath);
     env->ReleaseStringUTFChars(mp3_path, mp3Path);
-    return 0;
+    return ret;
 }

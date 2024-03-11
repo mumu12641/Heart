@@ -12,11 +12,18 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 object FileUtil {
-    private fun getDirectory() = App.context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    private fun getPictureDirectory() =
+        App.context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+
+    private fun getMp3Directory() = App.context.getExternalFilesDir(Environment.DIRECTORY_MUSIC)
     private val TAG = "FileUtil"
 
-    private fun createFile(name: String) = File(
-        getDirectory(), name
+    private fun createPictureFile(name: String) = File(
+        getPictureDirectory(), name
+    )
+
+    private fun createMp3File(name: String) = File(
+        getMp3Directory(), name
     )
 
     suspend fun saveECG(bitmap: Bitmap, ecgData: List<Int>): ECGModel {
@@ -42,7 +49,7 @@ object FileUtil {
     }
 
     private fun writeBitmapToFile(bitmap: Bitmap, name: String): String {
-        val file = createFile("$name.jpg")
+        val file = createPictureFile("$name.jpg")
         FileOutputStream(file).use { outputStream ->
             bitmap.compress(
                 Bitmap.CompressFormat.JPEG, 100, outputStream
@@ -53,7 +60,7 @@ object FileUtil {
     }
 
     private fun writeECGDataToPcm(ecgData: List<Int>, name: String): String {
-        val file = createFile("$name.pcm")
+        val file = createMp3File("$name.pcm")
         FileOutputStream(file).apply {
             write(DataUtil.intListToByteArray(ecgData))
             close()
@@ -63,11 +70,14 @@ object FileUtil {
     }
 
     private fun pcmToMp3(pcmPath: String, name: String): String {
-        val mp3File = createFile("$name.mp3")
+        val mp3File = createMp3File("$name.mp3")
         val sampleRate = 44100
         val channel = 2
         val bitRate = 64000
-        pcmToMp3JNI(pcmPath, mp3File.absolutePath, sampleRate, channel, bitRate)
+        val ret = pcmToMp3JNI(pcmPath, mp3File.absolutePath, sampleRate, channel, bitRate)
+        if (ret == -1) {
+            Timber.tag(TAG).d("return err")
+        }
         return mp3File.absolutePath
     }
 

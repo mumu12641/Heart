@@ -7,8 +7,9 @@ import io.github.mumu12641.data.local.dao.ECGDao
 import io.github.mumu12641.data.local.model.ECGModel
 
 @Database(
-    entities = [ECGModel::class], version = 2, exportSchema = true, autoMigrations = [
-        AutoMigration(from = 1, to = 2)
+    entities = [ECGModel::class], version = 3, exportSchema = true,
+    autoMigrations = [
+        AutoMigration(from = 2, to = 3)
     ]
 )
 abstract class ECGDatabase : RoomDatabase() {

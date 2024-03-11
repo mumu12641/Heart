@@ -7,14 +7,20 @@ import com.zhzc0x.bluetooth.client.ClientType
 import com.zhzc0x.bluetooth.client.ConnectState
 import com.zhzc0x.bluetooth.client.Device
 import io.github.mumu12641.App.Companion.context
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class BLEService {
 
     private val TAG = "BLEService"
+
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     private var bluetoothClient: BluetoothClient =
         BluetoothClient(context, ClientType.BLE, null)
@@ -22,6 +28,7 @@ class BLEService {
     private val _bluetoothState = MutableStateFlow(
         value = DEFAULT_BLUETOOTH_STATE
     )
+
     val bluetoothState: Flow<BluetoothState> get() = _bluetoothState
 
 
@@ -129,6 +136,8 @@ class BLEService {
     }
 
     fun receiveData() {
+        var num = 0
+        val buffer = mutableListOf(0)
         bluetoothClient.receiveData(_bluetoothState.value.receiveCharacteristic!!.uuid) { data ->
             if (_bluetoothState.value.bleState != BLEState.Stop) {
                 _bluetoothState.value.bleState = BLEState.Fetching
@@ -136,9 +145,17 @@ class BLEService {
                 val len = voltageStr.length
                 if (len < 6) {
                     val voltage = voltageStr.substring(0, voltageStr.length - 1).toInt()
-                    _bluetoothState.value.ecgData.add(0, voltage)
-                    Timber.tag(TAG).d("Receive Data: ${data.toString(Charsets.US_ASCII)}")
-
+                    buffer.add(0, voltage)
+                    num++
+                    if (num == 16) {
+                        num = 0
+                        scope.launch {
+                            delay(300)
+                            _bluetoothState.value.ecgData.addAll(0, buffer)
+                            Timber.tag(TAG)
+                                .d("Receive Data: ${data.toString(Charsets.US_ASCII)}")
+                        }
+                    }
                 }
             }
         }

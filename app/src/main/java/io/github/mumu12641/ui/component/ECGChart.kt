@@ -20,6 +20,7 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import io.github.mumu12641.BLE.ECG_DATA_SIZE
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
@@ -31,12 +32,12 @@ import kotlin.math.roundToInt
 @Composable
 fun PreviewEcgChart() {
 //    2528
-    EcgChart(data = List(256) { 2530f }, false) {}
+    EcgChart(data = List(ECG_DATA_SIZE) { 2530 }, false) {}
 //    EcgChart(data = List(100) { (Random.nextInt(2450, 2550).toFloat()) }, false){}
 }
 
 @Composable
-fun EcgChart(data: List<Float>, saving: Boolean, saveBitMap: (Bitmap) -> Unit) {
+fun EcgChart(data: List<Int>, saving: Boolean, saveBitMap: (Bitmap) -> Unit) {
     val lines = mutableListOf<LineDataSet>()
     val lineColor = MaterialTheme.colorScheme.onSecondaryContainer.toArgb()
     val primaryLineColor = MaterialTheme.colorScheme.primary.toArgb()
@@ -47,8 +48,8 @@ fun EcgChart(data: List<Float>, saving: Boolean, saveBitMap: (Bitmap) -> Unit) {
         AndroidView(
             factory = { context ->
                 LineChart(context).apply {
-                    val x = (0..256).map { i -> 1f * i }
-                    val y = List(256) { 0f }
+                    val x = (0..ECG_DATA_SIZE).map { i -> 1f * i }
+                    val y = List(ECG_DATA_SIZE) { 0f }
                     val primaryLine =
                         LineDataSet(x.zip(y).map { Entry(it.first, it.second) }, "primary")
                     lines.add(primaryLine)
@@ -57,9 +58,9 @@ fun EcgChart(data: List<Float>, saving: Boolean, saveBitMap: (Bitmap) -> Unit) {
                 }
             },
             update = { it ->
-                val x = (0..256).map { i -> 1f * i }
+                val x = (0..ECG_DATA_SIZE).map { i -> 1f * i }
                 val primaryLine =
-                    LineDataSet(x.zip(data).map { Entry(it.first, it.second) }, "primary")
+                    LineDataSet(x.zip(data).map { Entry(it.first, it.second.toFloat()) }, "primary")
                 primaryLine.apply {
                     setDrawCircles(false)
                     lineWidth = 2f
