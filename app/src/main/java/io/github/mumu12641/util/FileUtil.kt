@@ -26,6 +26,9 @@ object FileUtil {
         getMp3Directory(), name
     )
 
+    fun getFileSize(path: String) = File(path).length()
+
+
     suspend fun saveECG(bitmap: Bitmap, ecgData: List<Int>): ECGModel {
         val time = SimpleDateFormat(
             "MM-dd HH:mm:ss",
@@ -80,6 +83,7 @@ object FileUtil {
         }
         return mp3File.absolutePath
     }
+
 
     private external fun pcmToMp3JNI(
         pcmPath: String, mp3Path: String,

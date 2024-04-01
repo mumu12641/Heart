@@ -41,6 +41,7 @@ import com.pushpal.jetlime.JetLimeEventDefaults
 import com.skydoves.landscapist.glide.GlideImage
 import io.github.mumu12641.R
 import io.github.mumu12641.data.local.model.ECGModel
+import io.github.mumu12641.util.FileUtil
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -144,8 +145,8 @@ fun ECGCard(ecg: ECGModel, expand: Boolean, chooseIndex: () -> Unit, delete: (EC
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                         Text(
-                            text = ecg.des ?: stringResource(id = R.string.no_des),
-//                            text = ecg.path,
+//                            text = ecg.des ?: stringResource(id = R.string.no_des),
+                            text = FileUtil.getFileSize(ecg.mp3Path).toString(),
                             color = MaterialTheme.colorScheme.secondary,
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(top = 4.dp)

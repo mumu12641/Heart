@@ -95,8 +95,8 @@ private fun LineChart.ConfigureGrid(
 ) {
     val majorX = 10f
     val majorY = 50f
-    val minorX = majorX / 10
-    val minorY = majorY / 5
+    val minorX = majorX / 5
+    val minorY = majorY / 1
 
     val xMin = floor(x.min() / majorX) * majorX
     val xMax = ceil(x.max() / majorX) * majorX
@@ -106,8 +106,10 @@ private fun LineChart.ConfigureGrid(
 
 //    val yMin = floor(2420 / majorY) * majorY
 //    val yMax = ceil(2640 / majorY) * majorY
-    val yMin = 2470f
-    val yMax = 2610f
+//    val yMin = 2470f
+//    val yMax = 2610f
+    val yMin = 2440f
+    val yMax = 2600f
 
     xGridLines(lines, minorX, yMin, yMax, xMin, xMax, false, lineColor)
     yGridLines(lines, minorY, yMin, yMax, xMin, xMax, false, lineColor)
@@ -118,17 +120,17 @@ private fun LineChart.ConfigureGrid(
 
     this.axisRight.isEnabled = false
     val yAx = this.axisLeft
-//    yAx.setDrawLabels(false)
-//    yAx.setDrawGridLines(false)
-//    yAx.setDrawAxisLine(false)
+    yAx.setDrawLabels(false)
+    yAx.setDrawGridLines(false)
+    yAx.setDrawAxisLine(false)
     yAx.axisMinimum = yMin
     yAx.axisMaximum = yMax
 
     val xAx = this.xAxis
-//    xAx.setDrawLabels(false)
+    xAx.setDrawLabels(false)
     xAx.position = XAxis.XAxisPosition.BOTTOM
-//    xAx.setDrawGridLines(false)
-//    xAx.setDrawAxisLine(false)
+    xAx.setDrawGridLines(false)
+    xAx.setDrawAxisLine(false)
     xAx.axisMinimum = xMin
     xAx.axisMaximum = xMax + 0.01f
 
