@@ -15,7 +15,7 @@ add_library( # Sets the name of the library.
         SHARED
 
         # Provides a relative path to your source file(s).
-        lame_lib.cpp mp3_encoder.cpp)
+        lame_lib.cpp mp3_encoder.cpp wave_lib.cpp)
 
 add_library(mp3lame STATIC IMPORTED)
 set_target_properties(mp3lame PROPERTIES IMPORTED_LOCATION

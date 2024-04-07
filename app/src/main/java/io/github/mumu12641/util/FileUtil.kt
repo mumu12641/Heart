@@ -89,4 +89,8 @@ object FileUtil {
         pcmPath: String, mp3Path: String,
         sampleRate: Int, channel: Int, bitRate: Int
     ): Int
+
+    private external fun pcmToWavJNI(
+        pcmPath: String,wavPath:String
+    ):Int
 }

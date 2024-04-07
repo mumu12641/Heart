@@ -25,5 +25,15 @@ object DataUtil {
         return quantizedArray
     }
 
-    fun intListToByteArray(list: List<Int>): ByteArray = list.map { it.toByte() }.toByteArray()
+    //        fun intListToByteArray(list: List<Int>): ByteArray = list.map { it.toShort().toByte() }.toByteArray()
+    fun intListToByteArray(list: List<Int>): ByteArray {
+        val byteArray = ByteArray(list.size * 2) // 每个元素占两个字节，所以总共占用 list.size * 2 个字节
+        list.forEachIndexed { index, value ->
+            val shortValue = value.toShort() // 将整数转换为 Short 类型
+            byteArray[index * 2] = (shortValue.toInt() and 0xFF).toByte() // 低位字节
+            byteArray[index * 2 + 1] = ((shortValue.toInt() shr 8) and 0xFF).toByte() // 高位字节
+        }
+        return byteArray
+    }
 }
+
