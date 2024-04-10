@@ -1,7 +1,6 @@
 package io.github.mumu12641
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,7 +35,7 @@ class MainActivity : ComponentActivity() {
 
     companion object {
         init {
-            System.loadLibrary("lame_lib")
+            System.loadLibrary("wave_lib")
         }
     }
 

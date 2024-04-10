@@ -38,7 +38,7 @@ android {
                     isEnable = true
                     reset()
                     include("armeabi-v7a", "arm64-v8a")
-                    isUniversalApk = false
+                    isUniversalApk = true
                 }
             }
         }
@@ -48,7 +48,7 @@ android {
                     isEnable = true
                     reset()
                     include("armeabi-v7a", "arm64-v8a")
-                    isUniversalApk = false
+                    isUniversalApk = true
                 }
             }
         }
@@ -81,7 +81,7 @@ android {
             isEnable = true
             reset()
             include("arm64-v8a", "armeabi-v7a")
-            isUniversalApk = false
+            isUniversalApk = true
         }
     }
 
@@ -131,7 +131,7 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:2.50")
 
     // icons
-    implementation("androidx.compose.material:material-icons-extended:1.6.3")
+    implementation("androidx.compose.material:material-icons-extended:1.6.5")
 
     // navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")

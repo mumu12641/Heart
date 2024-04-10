@@ -22,7 +22,7 @@ object FileUtil {
         getPictureDirectory(), name
     )
 
-    private fun createMp3File(name: String) = File(
+    private fun createFile(name: String) = File(
         getMp3Directory(), name
     )
 
@@ -45,7 +45,6 @@ object FileUtil {
                 DataUtil.quantitativeSampling(ecgData),
                 pcmName
             )
-//        val mp3Path = pcmToMp3(pcmPath, mp3Name)
         val wavPath = pcmToWav(pcmPath, wavName)
         delay(1000)
         Timber.tag(TAG).d("Save ECG to database")
@@ -54,7 +53,7 @@ object FileUtil {
         )
     }
     private fun writeECGDataToTxt(ecgData: List<Int>, name: String){
-        val file = createMp3File("$name.txt")
+        val file = createFile("$name.txt")
         file.bufferedWriter().use { writer ->
             for (ecg in ecgData) {
                 writer.write("$ecg\n")
@@ -74,7 +73,7 @@ object FileUtil {
     }
 
     private fun writeECGDataToPcm(ecgData: List<Int>, name: String): String {
-        val file = createMp3File("$name.pcm")
+        val file = createFile("$name.pcm")
         FileOutputStream(file).apply {
             write(DataUtil.intListToByteArray(ecgData))
             close()
@@ -83,20 +82,9 @@ object FileUtil {
         return file.absolutePath
     }
 
-    private fun pcmToMp3(pcmPath: String, name: String): String {
-        val mp3File = createMp3File("$name.mp3")
-        val sampleRate = 44100
-        val channel = 2
-        val bitRate = 64000
-        val ret = pcmToMp3JNI(pcmPath, mp3File.absolutePath, sampleRate, channel, bitRate)
-        if (ret == -1) {
-            Timber.tag(TAG).d("return err")
-        }
-        return mp3File.absolutePath
-    }
 
     private fun pcmToWav(pcmPath: String,name: String):String{
-        val mp3File = createMp3File("$name.wav")
+        val mp3File = createFile("$name.wav")
         val ret = pcmToWavJNI(pcmPath,mp3File.absolutePath)
 
         if (ret == -1) {
@@ -105,10 +93,6 @@ object FileUtil {
         return mp3File.absolutePath
     }
 
-    private external fun pcmToMp3JNI(
-        pcmPath: String, mp3Path: String,
-        sampleRate: Int, channel: Int, bitRate: Int
-    ): Int
 
     private external fun pcmToWavJNI(
         pcmPath: String,wavPath:String
