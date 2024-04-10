@@ -112,6 +112,7 @@ class HomeViewModel @Inject constructor(
 
     fun receiveData() {
         bluetoothService.receiveData()
+//        bluetoothService.readData()
     }
 
     fun saveECG() {

@@ -21,12 +21,13 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import io.github.mumu12641.BLE.ECG_DATA_SIZE
+import timber.log.Timber
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
 
 
-//val TAG = "ECGChart"
+val TAG = "ECGChart"
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
@@ -38,6 +39,8 @@ fun PreviewEcgChart() {
 
 @Composable
 fun EcgChart(data: List<Int>, saving: Boolean, saveBitMap: (Bitmap) -> Unit) {
+//    Timber.tag(TAG)
+//        .d("$data")
     val lines = mutableListOf<LineDataSet>()
     val lineColor = MaterialTheme.colorScheme.onSecondaryContainer.toArgb()
     val primaryLineColor = MaterialTheme.colorScheme.primary.toArgb()
@@ -93,7 +96,7 @@ private fun LineChart.ConfigureGrid(
     lines: MutableList<LineDataSet>,
     lineColor: Int,
 ) {
-    val majorX = 10f
+    val majorX = (ECG_DATA_SIZE / 25f).toFloat()
     val majorY = 50f
     val minorX = majorX / 5
     val minorY = majorY / 1
@@ -133,6 +136,8 @@ private fun LineChart.ConfigureGrid(
     xAx.setDrawAxisLine(false)
     xAx.axisMinimum = xMin
     xAx.axisMaximum = xMax + 0.01f
+    xAx.mAxisRange = 1000f
+
 
     this.data = LineData(lines.toList())
     this.description.isEnabled = false

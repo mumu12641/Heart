@@ -45,11 +45,11 @@ char *dummy_get_raw_pcm(const char *pcmPath, int *bytes_read) {
 
 void set_wav_header(int raw_sz, wav_header_t *wh) {
     // RIFF chunk
-    strcpy(wh->chunk_id, "RIFF");
+    strncpy((char*)wh->chunk_id, "RIFF",strlen("RIFF"));
     wh->chunk_size = 36 + raw_sz;
 
     // fmt sub-chunk (to be optimized)
-    strncpy(wh->sub_chunk1_id, "WAVEfmt ", strlen("WAVEfmt "));
+    strncpy((char *)wh->sub_chunk1_id, "WAVEfmt ", strlen("WAVEfmt "));
     wh->sub_chunk1_size = 16;
     wh->audio_format = 1;
     wh->num_channels = 1;
@@ -60,7 +60,7 @@ void set_wav_header(int raw_sz, wav_header_t *wh) {
     wh->byte_rate = wh->sample_rate * wh->num_channels * wh->bits_per_sample / 8;
 
     // data sub-chunk
-    strncpy(wh->sub_chunk2_id, "data", strlen("data"));
+    strncpy((char *)(wh->sub_chunk2_id), "data", strlen("data"));
     wh->sub_chunk2_size = raw_sz;
 }
 
@@ -76,6 +76,9 @@ Java_io_github_mumu12641_util_FileUtil_pcmToWavJNI(JNIEnv *env, jobject thiz, js
 
     memset(&header, '\0', sizeof(wav_header_t));
     char *pcm_buf = dummy_get_raw_pcm(pcmPath, &raw_sz);
+    if(pcm_buf == NULL){
+        return -1;
+    }
     set_wav_header(raw_sz, &header);
 
     wav = fopen(wavPath, "wb");
@@ -83,8 +86,7 @@ Java_io_github_mumu12641_util_FileUtil_pcmToWavJNI(JNIEnv *env, jobject thiz, js
     fwrite(pcm_buf, 1, raw_sz, wav);
     fclose(wav);
 
-    if (pcm_buf)
-        free(pcm_buf);
-    return -1;
+    free(pcm_buf);
+    return 1;
 }
 

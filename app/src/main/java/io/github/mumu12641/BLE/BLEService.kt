@@ -50,7 +50,7 @@ class BLEService {
         bluetoothClient.startScan(5000, onEndScan = {
             _bluetoothState.update { it.copy(bleState = BLEState.Done) }
         }) {
-            Timber.tag(TAG).d("startScan: ${it.name}, ${it.address}, ${it.type}")
+//            Timber.tag(TAG).d("startScan: ${it.name}, ${it.address}, ${it.type}")
             if (!_bluetoothState.value.devices.contains(it)) {
                 _bluetoothState.value.devices += it
             }
@@ -65,7 +65,7 @@ class BLEService {
     fun connect(device: Device) {
         bluetoothClient.disconnect()
         bluetoothClient.stopScan()
-        bluetoothClient.connect(device, 80) {
+        bluetoothClient.connect(device, 512) {
             when (it) {
                 ConnectState.CONNECTED -> {
                     Timber.tag(TAG).d("connect: CONNECTED")
@@ -76,6 +76,7 @@ class BLEService {
                             service.characteristics?.forEach { characteristic ->
                                 if (characteristic.properties.contains(Characteristic.Property.NOTIFY)
                                 ) {
+                                    Timber.tag(TAG).d("characteristic is %s", characteristic)
                                     bluetoothClient.assignService(service)
                                     _bluetoothState.update {
                                         it.copy(
@@ -135,26 +136,33 @@ class BLEService {
         _bluetoothState.value.bleState = BLEState.Stop
     }
 
+
     fun receiveData() {
         var num = 0
-        val buffer = mutableListOf(0)
+        var buffer: MutableList<Int>
+        var s = ""
+        val start = System.currentTimeMillis()
         bluetoothClient.receiveData(_bluetoothState.value.receiveCharacteristic!!.uuid) { data ->
             if (_bluetoothState.value.bleState != BLEState.Stop) {
                 _bluetoothState.value.bleState = BLEState.Fetching
                 val voltageStr = data.toString(Charsets.US_ASCII)
-                val len = voltageStr.length
-                if (len < 6) {
-                    val voltage = voltageStr.substring(0, voltageStr.length - 1).toInt()
-                    buffer.add(0, voltage)
-                    num++
-                    if (num == 16) {
-                        num = 0
-                        scope.launch {
-                            delay(300)
-                            _bluetoothState.value.ecgData.addAll(0, buffer)
-                            Timber.tag(TAG)
-                                .d("Receive Data: ${data.toString(Charsets.US_ASCII)}")
-                        }
+                s = voltageStr + s
+                num++
+                if (num == 64) {
+                    num = 0
+                    buffer =
+                        s.split(" ").filter { it.length == 4 }.map { it.toInt() }.toMutableList()
+                    s = ""
+                    scope.launch {
+                        buffer.removeAt(buffer.size - 1)
+                        _bluetoothState.value.ecgData.addAll(0, buffer)
+                        buffer.clear()
+                        val time = System.currentTimeMillis() - start
+                        val cnt = _bluetoothState.value.ecgData.count { it != 0 }
+                        val len  = _bluetoothState.value.ecgData.size
+                        Timber.tag(TAG)
+                            .d("Update Data $time, $cnt, $len")
+                        delay(100)
                     }
                 }
             }

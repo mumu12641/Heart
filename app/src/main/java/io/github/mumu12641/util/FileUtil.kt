@@ -35,22 +35,33 @@ object FileUtil {
             Locale.getDefault()
         ).format(System.currentTimeMillis())
         val bitmapName = time + "_jpg"
-        val mp3Name = time + "_mp3"
+        val txtName = time + "_txt"
+        val wavName = time + "_wav"
         val pcmName = time + "_pcm"
+        writeECGDataToTxt(ecgData,txtName)
         val jpgPath = writeBitmapToFile(bitmap, bitmapName)
         val pcmPath =
             writeECGDataToPcm(
                 DataUtil.quantitativeSampling(ecgData),
                 pcmName
             )
-        val mp3Path = pcmToMp3(pcmPath, mp3Name)
+//        val mp3Path = pcmToMp3(pcmPath, mp3Name)
+        val wavPath = pcmToWav(pcmPath, wavName)
         delay(1000)
         Timber.tag(TAG).d("Save ECG to database")
         return ECGModel(
-            0, time, pcmPath, mp3Path, jpgPath, time, null
+            0, time, pcmPath, wavPath, jpgPath, time, null
         )
     }
-
+    private fun writeECGDataToTxt(ecgData: List<Int>, name: String){
+        val file = createMp3File("$name.txt")
+        file.bufferedWriter().use { writer ->
+            for (ecg in ecgData) {
+                writer.write("$ecg\n")
+            }
+        }
+        Timber.tag(TAG).d("Save ECGData to %s", file.absolutePath)
+    }
     private fun writeBitmapToFile(bitmap: Bitmap, name: String): String {
         val file = createPictureFile("$name.jpg")
         FileOutputStream(file).use { outputStream ->
@@ -84,6 +95,15 @@ object FileUtil {
         return mp3File.absolutePath
     }
 
+    private fun pcmToWav(pcmPath: String,name: String):String{
+        val mp3File = createMp3File("$name.wav")
+        val ret = pcmToWavJNI(pcmPath,mp3File.absolutePath)
+
+        if (ret == -1) {
+            Timber.tag(TAG).d("return err")
+        }
+        return mp3File.absolutePath
+    }
 
     private external fun pcmToMp3JNI(
         pcmPath: String, mp3Path: String,
