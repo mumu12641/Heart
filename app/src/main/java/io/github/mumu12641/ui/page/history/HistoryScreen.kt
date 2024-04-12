@@ -2,6 +2,7 @@ package io.github.mumu12641.ui.page.history
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -78,7 +80,7 @@ fun HistoryScreen(
 @Composable
 fun HistoryContent(modifier: Modifier, historyViewModel: HistoryViewModel) {
     val uiState by historyViewModel.uiState.collectAsState()
-    val ecgModels = uiState.ecgModels
+    val ecgModels = uiState.ecgModels.reversed()
     val expandIndex = uiState.expandIndex
     JetLimeColumn(
         modifier = modifier.padding(horizontal = 10.dp),
@@ -96,18 +98,6 @@ fun HistoryContent(modifier: Modifier, historyViewModel: HistoryViewModel) {
         }
     }
 
-//    LazyColumn(modifier = modifier) {
-//        for ((index, ecg) in ecgModels.withIndex()) {
-//            item {
-//                ECGCard(
-//                    ecg = ecg,
-//                    expandIndex == index,
-//                    { historyViewModel.setExpandIndex(index) }) {
-//                    historyViewModel.deleteECG(it)
-//                }
-//            }
-//        }
-//    }
 }
 
 @Composable
@@ -120,14 +110,19 @@ fun ECGCard(ecg: ECGModel, expand: Boolean, chooseIndex: () -> Unit, delete: (EC
         .fillMaxWidth()
         .height(height)
         .clip(RoundedCornerShape(corner)),
-        onClick = { chooseIndex() }) {
+        onClick = {}
+    ) {
         Column(verticalArrangement = Arrangement.Center) {
             GlideImage(
                 imageModel = { ecg.jpgPath },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(imgHeight)
-                    .clip(RoundedCornerShape(corner)),
+                    .clip(RoundedCornerShape(corner))
+                    .clickable {
+                        chooseIndex()
+                        if (expand) FileUtil.openFile(ecg.jpgPath)
+                    },
             )
             AnimatedVisibility(visible = expand) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -145,11 +140,19 @@ fun ECGCard(ecg: ECGModel, expand: Boolean, chooseIndex: () -> Unit, delete: (EC
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                         Text(
-//                            text = ecg.des ?: stringResource(id = R.string.no_des),
-                            text = FileUtil.getFileSize(ecg.mp3Path).toString(),
+                            text = ecg.des ?: stringResource(id = R.string.no_des),
+//                            text = FileUtil.getFileSize(ecg.wavPath).toString(),
                             color = MaterialTheme.colorScheme.secondary,
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+
+                    IconButton(onClick = { FileUtil.openFile(ecg.mp3Path) }) {
+                        Icon(
+                            Icons.Outlined.PlayCircle,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                     IconButton(onClick = { delete(ecg) }) {

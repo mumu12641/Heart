@@ -21,4 +21,5 @@
     <string name="smoking_frequency">Smoking frequency</string>
     <string name="genetic_disease">Family genetic disease</string>
     <string name="own_disease">Own diseases</string>
+    <string name="open_file_error">Failed to open wav file</string>
 </resources>

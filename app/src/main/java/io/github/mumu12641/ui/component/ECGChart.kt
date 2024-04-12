@@ -96,7 +96,7 @@ private fun LineChart.ConfigureGrid(
     lines: MutableList<LineDataSet>,
     lineColor: Int,
 ) {
-    val majorX = (ECG_DATA_SIZE / 25f).toFloat()
+    val majorX = (ECG_DATA_SIZE / 25f)
     val majorY = 50f
     val minorX = majorX / 5
     val minorY = majorY / 1
@@ -135,8 +135,8 @@ private fun LineChart.ConfigureGrid(
     xAx.setDrawGridLines(false)
     xAx.setDrawAxisLine(false)
     xAx.axisMinimum = xMin
-    xAx.axisMaximum = xMax + 0.01f
-    xAx.mAxisRange = 1000f
+    xAx.axisMaximum = xMax
+//    xAx.mAxisRange = 100f
 
 
     this.data = LineData(lines.toList())

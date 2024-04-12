@@ -25,5 +25,5 @@ data class BluetoothState(
     var ecgData: MutableList<Int> = MutableList(ECG_DATA_SIZE) { 0 }
 )
 
-const val ECG_DATA_SIZE = 2000
+const val ECG_DATA_SIZE = 256
 val DEFAULT_BLUETOOTH_STATE = BluetoothState()

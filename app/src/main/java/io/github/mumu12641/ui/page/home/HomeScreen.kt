@@ -234,7 +234,6 @@ private fun SearchingDevices(
                             color = MaterialTheme.colorScheme.secondary,
                             trackColor = MaterialTheme.colorScheme.surfaceVariant,
                         )
-
                     }
                 }
             }

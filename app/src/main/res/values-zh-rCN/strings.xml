@@ -18,4 +18,5 @@
     <string name="smoking_frequency">吸烟频率</string>
     <string name="genetic_disease">家族遗传病</string>
     <string name="own_disease">自身疾病</string>
+    <string name="open_file_error">打开wav文件失败</string>
 </resources>

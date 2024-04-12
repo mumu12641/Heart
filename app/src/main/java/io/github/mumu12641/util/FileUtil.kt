@@ -1,8 +1,13 @@
 package io.github.mumu12641.util
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Environment
-import io.github.mumu12641.App
+import android.widget.Toast
+import androidx.core.content.FileProvider
+import io.github.mumu12641.App.Companion.context
+import io.github.mumu12641.R
 import io.github.mumu12641.data.local.model.ECGModel
 import kotlinx.coroutines.delay
 import timber.log.Timber
@@ -11,11 +16,12 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+
 object FileUtil {
     private fun getPictureDirectory() =
-        App.context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
 
-    private fun getMp3Directory() = App.context.getExternalFilesDir(Environment.DIRECTORY_MUSIC)
+    private fun getMp3Directory() = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC)
     private val TAG = "FileUtil"
 
     private fun createPictureFile(name: String) = File(
@@ -26,19 +32,16 @@ object FileUtil {
         getMp3Directory(), name
     )
 
-    fun getFileSize(path: String) = File(path).length()
-
-
     suspend fun saveECG(bitmap: Bitmap, ecgData: List<Int>): ECGModel {
         val time = SimpleDateFormat(
-            "MM-dd HH:mm:ss",
+            "MM-dd-HH:mm:ss",
             Locale.getDefault()
         ).format(System.currentTimeMillis())
         val bitmapName = time + "_jpg"
         val txtName = time + "_txt"
         val wavName = time + "_wav"
         val pcmName = time + "_pcm"
-        writeECGDataToTxt(ecgData,txtName)
+        writeECGDataToTxt(ecgData, txtName)
         val jpgPath = writeBitmapToFile(bitmap, bitmapName)
         val pcmPath =
             writeECGDataToPcm(
@@ -52,7 +55,8 @@ object FileUtil {
             0, time, pcmPath, wavPath, jpgPath, time, null
         )
     }
-    private fun writeECGDataToTxt(ecgData: List<Int>, name: String){
+
+    private fun writeECGDataToTxt(ecgData: List<Int>, name: String) {
         val file = createFile("$name.txt")
         file.bufferedWriter().use { writer ->
             for (ecg in ecgData) {
@@ -61,6 +65,7 @@ object FileUtil {
         }
         Timber.tag(TAG).d("Save ECGData to %s", file.absolutePath)
     }
+
     private fun writeBitmapToFile(bitmap: Bitmap, name: String): String {
         val file = createPictureFile("$name.jpg")
         FileOutputStream(file).use { outputStream ->
@@ -83,9 +88,9 @@ object FileUtil {
     }
 
 
-    private fun pcmToWav(pcmPath: String,name: String):String{
+    private fun pcmToWav(pcmPath: String, name: String): String {
         val mp3File = createFile("$name.wav")
-        val ret = pcmToWavJNI(pcmPath,mp3File.absolutePath)
+        val ret = pcmToWavJNI(pcmPath, mp3File.absolutePath)
 
         if (ret == -1) {
             Timber.tag(TAG).d("return err")
@@ -93,8 +98,33 @@ object FileUtil {
         return mp3File.absolutePath
     }
 
+    fun openFile(path: String) {
+        path.runCatching {
+            createIntentForFile(this)?.run {
+                context.startActivity(this)
 
+            }
+                ?: throw Exception()
+        }.onFailure {
+            Toast.makeText(context, context.getString(R.string.open_file_error), Toast.LENGTH_LONG)
+                .show()
+        }
+    }
+
+
+    private fun createIntentForFile(path: String?): Intent? {
+        if (path == null) return null
+        val uri = FileProvider.getUriForFile(context, context.getFileProvider(), File(path))
+        return Intent().apply {
+            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+            action = (Intent.ACTION_VIEW)
+            data = uri
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+    }
+
+    private fun Context.getFileProvider() = "$packageName.provider"
     private external fun pcmToWavJNI(
-        pcmPath: String,wavPath:String
-    ):Int
+        pcmPath: String, wavPath: String
+    ): Int
 }
