@@ -5,7 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zhzc0x.bluetooth.client.Device
+import io.github.mumu12641.BLE.util.client.Device
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.App.Companion.context
 import io.github.mumu12641.BLE.BLEService

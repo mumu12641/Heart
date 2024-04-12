@@ -144,7 +144,7 @@ dependencies {
     implementation("com.airbnb.android:lottie-compose:6.3.0")
 
     // Bluetooth toolkit
-    implementation("com.zhzc0x.bluetooth:client-android:1.0.1")
+//    implementation("com.zhzc0x.bluetooth:client-android:1.0.1")
 
     // Timber
     implementation("com.jakewharton.timber:timber:5.0.1")

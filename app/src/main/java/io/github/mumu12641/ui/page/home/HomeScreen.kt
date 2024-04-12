@@ -52,7 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.zhzc0x.bluetooth.client.Device
+import io.github.mumu12641.BLE.util.client.Device
 import io.github.mumu12641.BLE.BLEState
 import io.github.mumu12641.R
 import io.github.mumu12641.ui.component.EcgChart

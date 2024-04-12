@@ -1,8 +1,8 @@
 package io.github.mumu12641.BLE
 
-import com.zhzc0x.bluetooth.client.Characteristic
-import com.zhzc0x.bluetooth.client.Device
-import com.zhzc0x.bluetooth.client.Service
+import io.github.mumu12641.BLE.util.client.Characteristic
+import io.github.mumu12641.BLE.util.client.Device
+import io.github.mumu12641.BLE.util.client.Service
 
 sealed class BLEState {
 
@@ -25,5 +25,5 @@ data class BluetoothState(
     var ecgData: MutableList<Int> = MutableList(ECG_DATA_SIZE) { 0 }
 )
 
-const val ECG_DATA_SIZE = 256
+const val ECG_DATA_SIZE = 500
 val DEFAULT_BLUETOOTH_STATE = BluetoothState()

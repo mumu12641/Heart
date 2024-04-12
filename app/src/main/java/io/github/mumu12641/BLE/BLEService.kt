@@ -1,11 +1,12 @@
 package io.github.mumu12641.BLE
 
-import com.zhzc0x.bluetooth.BluetoothClient
-import com.zhzc0x.bluetooth.client.Characteristic
-import com.zhzc0x.bluetooth.client.ClientState
-import com.zhzc0x.bluetooth.client.ClientType
-import com.zhzc0x.bluetooth.client.ConnectState
-import com.zhzc0x.bluetooth.client.Device
+import android.bluetooth.BluetoothGatt.CONNECTION_PRIORITY_HIGH
+import io.github.mumu12641.BLE.util.BluetoothClient
+import io.github.mumu12641.BLE.util.client.Characteristic
+import io.github.mumu12641.BLE.util.client.ClientState
+import io.github.mumu12641.BLE.util.client.ClientType
+import io.github.mumu12641.BLE.util.client.ConnectState
+import io.github.mumu12641.BLE.util.client.Device
 import io.github.mumu12641.App.Companion.context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +24,7 @@ class BLEService {
     private val scope = CoroutineScope(Dispatchers.IO)
 
     private var bluetoothClient: BluetoothClient =
-        BluetoothClient(context, ClientType.BLE, null)
+        BluetoothClient(context, null)
 
     private val _bluetoothState = MutableStateFlow(
         value = DEFAULT_BLUETOOTH_STATE
@@ -35,7 +36,7 @@ class BLEService {
     fun init() {
         bluetoothClient.release()
         bluetoothClient =
-            BluetoothClient(context, ClientType.BLE, null)
+            BluetoothClient(context, null)
     }
 
     fun checkBlueToothIsOpen(): Boolean {
@@ -65,9 +66,10 @@ class BLEService {
     fun connect(device: Device) {
         bluetoothClient.disconnect()
         bluetoothClient.stopScan()
-        bluetoothClient.connect(device, 512) {
+        bluetoothClient.connect(device, 23) {
             when (it) {
                 ConnectState.CONNECTED -> {
+                    bluetoothClient.requestConnectionPriority(CONNECTION_PRIORITY_HIGH)
                     Timber.tag(TAG).d("connect: CONNECTED")
                     Timber.tag(TAG).d("supportedServices: ")
                     bluetoothClient.supportedServices()?.let {
@@ -105,6 +107,7 @@ class BLEService {
                 ConnectState.CONNECT_ERROR -> Timber.tag(TAG).d("connect: CONNECT_ERROR")
                 ConnectState.DISCONNECTED -> Timber.tag(TAG).d("connect: DISCONNECTED")
                 ConnectState.RECONNECT -> Timber.tag(TAG).d("connect: RECONNECT")
+                else -> {}
             }
         }
     }
@@ -146,22 +149,26 @@ class BLEService {
             if (_bluetoothState.value.bleState != BLEState.Stop) {
                 _bluetoothState.value.bleState = BLEState.Fetching
                 val voltageStr = data.toString(Charsets.US_ASCII)
+//                Timber.tag(TAG)
+//                    .d("Update Data $voltageStr")
                 s = voltageStr + s
                 num++
-                if (num == 64) {
+                if (num == 32) {
                     num = 0
                     buffer =
-                        s.split(" ").filter { it.length == 4 }.map { it.toInt() }.toMutableList()
+                        s.split(" ")
+                            .filter { it.length == 4 && it.toInt() < 2700 && it.toInt() > 2300 }
+                            .map { it.toInt() }.toMutableList()
                     s = ""
                     scope.launch {
                         buffer.removeAt(buffer.size - 1)
                         _bluetoothState.value.ecgData.addAll(0, buffer)
                         buffer.clear()
-                        val time = System.currentTimeMillis() - start
+                        val time = (System.currentTimeMillis() - start) / 1000f
                         val cnt = _bluetoothState.value.ecgData.count { it != 0 }
-                        val len  = _bluetoothState.value.ecgData.size
+                        val len = _bluetoothState.value.ecgData.size
                         Timber.tag(TAG)
-                            .d("Update Data $time, $cnt, $len")
+                            .d("Update Data $time s, $cnt, $len")
                         delay(100)
                     }
                 }
