@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.os.Environment
 import android.widget.Toast
 import androidx.core.content.FileProvider
-import com.chaquo.python.Python
 import io.github.mumu12641.App.Companion.context
 import io.github.mumu12641.App.Companion.pyObject
 import io.github.mumu12641.R
@@ -50,10 +49,6 @@ object FileUtil {
         val jpgPath = writeBitmapToFile(bitmap, bitmapName)
         val pcmPath = createFile("$pcmName.pcm").absolutePath
         val wavPath = createFile("$wavName.wav").absolutePath
-        Timber.tag(TAG).d("start Save ECG to database")
-//        val python = Python.getInstance()
-//        val pyObject = python.getModule("wave")
-//        pyObject.callAttr("sayHello")
         pyObject.callAttr(
             "txt2wav",
             txtPath, wavPath
@@ -85,27 +80,6 @@ object FileUtil {
         }
         Timber.tag(TAG).d("Save ECGData to %s", file.absolutePath)
         return file.absolutePath
-    }
-
-    private fun writeECGDataToPcm(ecgData: List<Int>, name: String): String {
-        val file = createFile("$name.pcm")
-        FileOutputStream(file).apply {
-            write(DataUtil.intListToByteArray(ecgData))
-            close()
-        }
-        Timber.tag(TAG).d("Save PCM to %s", file.absolutePath)
-        return file.absolutePath
-    }
-
-
-    private fun pcmToWav(pcmPath: String, name: String): String {
-        val mp3File = createFile("$name.wav")
-        val ret = pcmToWavJNI(pcmPath, mp3File.absolutePath)
-
-        if (ret == -1) {
-            Timber.tag(TAG).d("return err")
-        }
-        return mp3File.absolutePath
     }
 
     fun openFile(path: String) {

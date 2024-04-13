@@ -106,7 +106,6 @@ class BLEService {
                 ConnectState.CONNECT_ERROR -> Timber.tag(TAG).d("connect: CONNECT_ERROR")
                 ConnectState.DISCONNECTED -> Timber.tag(TAG).d("connect: DISCONNECTED")
                 ConnectState.RECONNECT -> Timber.tag(TAG).d("connect: RECONNECT")
-                else -> {}
             }
         }
     }
