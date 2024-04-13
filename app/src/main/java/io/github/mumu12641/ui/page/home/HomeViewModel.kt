@@ -5,12 +5,12 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.mumu12641.BLE.util.client.Device
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.App.Companion.context
 import io.github.mumu12641.BLE.BLEService
 import io.github.mumu12641.BLE.BluetoothState
 import io.github.mumu12641.BLE.DEFAULT_BLUETOOTH_STATE
+import io.github.mumu12641.BLE.util.client.Device
 import io.github.mumu12641.R
 import io.github.mumu12641.data.local.DefaultECGModelRepository
 import io.github.mumu12641.util.FileUtil
@@ -120,8 +120,9 @@ class HomeViewModel @Inject constructor(
     }
 
     fun saveBitmap(bitmap: Bitmap) {
-        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, _ ->
-            Timber.tag(TAG).e("Save Error!")
+        viewModelScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, t ->
+            Timber.tag(TAG).e("Save Error!%s", t.message)
+
 //            _saving.value = false
             bluetoothService.stopFetch()
         }) {

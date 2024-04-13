@@ -6,7 +6,9 @@ import android.graphics.Bitmap
 import android.os.Environment
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import com.chaquo.python.Python
 import io.github.mumu12641.App.Companion.context
+import io.github.mumu12641.App.Companion.pyObject
 import io.github.mumu12641.R
 import io.github.mumu12641.data.local.model.ECGModel
 import kotlinx.coroutines.delay
@@ -18,6 +20,8 @@ import java.util.Locale
 
 
 object FileUtil {
+
+
     private fun getPictureDirectory() =
         context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
 
@@ -32,6 +36,7 @@ object FileUtil {
         getMp3Directory(), name
     )
 
+
     suspend fun saveECG(bitmap: Bitmap, ecgData: List<Int>): ECGModel {
         val time = SimpleDateFormat(
             "MM-dd-HH:mm:ss",
@@ -43,14 +48,18 @@ object FileUtil {
         val pcmName = time + "_pcm"
         val txtPath = writeECGDataToTxt(ecgData, txtName)
         val jpgPath = writeBitmapToFile(bitmap, bitmapName)
-        val pcmPath =
-            writeECGDataToPcm(
-                DataUtil.quantitativeSampling(ecgData),
-                pcmName
-            )
-        val wavPath = pcmToWav(pcmPath, wavName)
-        delay(1000)
+        val pcmPath = createFile("$pcmName.pcm").absolutePath
+        val wavPath = createFile("$wavName.wav").absolutePath
+        Timber.tag(TAG).d("start Save ECG to database")
+//        val python = Python.getInstance()
+//        val pyObject = python.getModule("wave")
+//        pyObject.callAttr("sayHello")
+        pyObject.callAttr(
+            "txt2wav",
+            txtPath, wavPath
+        )
         Timber.tag(TAG).d("Save ECG to database")
+        delay(1000)
         return ECGModel(
             0, time, pcmPath, wavPath, jpgPath, txtPath, time, null
         )

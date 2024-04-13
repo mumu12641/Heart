@@ -9,6 +9,8 @@ plugins {
     id("androidx.room") version "2.6.0" apply false
 
     id("com.mikepenz.aboutlibraries.plugin") version "10.10.0" apply false
+
+    id("com.chaquo.python") version "15.0.1" apply false
 }
 buildscript {
 

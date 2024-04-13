@@ -7,6 +7,7 @@ plugins {
     id("com.mikepenz.aboutlibraries.plugin")
 
     id("com.google.protobuf")
+    id("com.chaquo.python")
 }
 
 android {
@@ -24,6 +25,24 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        ndk {
+            // On Apple silicon, you can omit x86_64.
+            abiFilters += listOf("arm64-v8a")
+        }
+
+    }
+    chaquopy {
+        defaultConfig {
+            buildPython("D:/Softwares/python3.8/python.exe")
+            version = "3.8"
+            pip {
+                options ("--extra-index-url", "https://pypi.tuna.tsinghua.edu.cn/simple/")
+                install("scipy")
+                install("wave")
+                install("numpy")
+            }
+        }
+
     }
 
     buildTypes {
