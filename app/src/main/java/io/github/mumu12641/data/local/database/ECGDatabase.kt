@@ -7,10 +7,10 @@ import io.github.mumu12641.data.local.dao.ECGDao
 import io.github.mumu12641.data.local.model.ECGModel
 
 @Database(
-    entities = [ECGModel::class], version = 3, exportSchema = true,
-    autoMigrations = [
-        AutoMigration(from = 2, to = 3)
-    ]
+    entities = [ECGModel::class], version = 1, exportSchema = true,
+//    autoMigrations = [
+//        AutoMigration(from = 1, to = 2)
+//    ]
 )
 abstract class ECGDatabase : RoomDatabase() {
     abstract fun getECGDao(): ECGDao

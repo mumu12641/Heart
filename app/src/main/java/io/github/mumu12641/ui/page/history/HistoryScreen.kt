@@ -148,7 +148,7 @@ fun ECGCard(ecg: ECGModel, expand: Boolean, chooseIndex: () -> Unit, delete: (EC
                         )
                     }
 
-                    IconButton(onClick = { FileUtil.openFile(ecg.mp3Path) }) {
+                    IconButton(onClick = { FileUtil.openFile(ecg.wavPath) }) {
                         Icon(
                             Icons.Outlined.PlayCircle,
                             contentDescription = null,

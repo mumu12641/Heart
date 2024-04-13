@@ -9,8 +9,9 @@ data class ECGModel(
     @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "pcmPath") val pcmPath: String,
-    @ColumnInfo(name = "mp3Path") val mp3Path: String,
+    @ColumnInfo(name = "wavPath") val wavPath: String,
     @ColumnInfo(name = "jpgPath") val jpgPath: String,
+    @ColumnInfo(name = "txtPath") val txtPath: String,
     @ColumnInfo(name = "time") val time: String,
     @ColumnInfo(name = "des") val des: String?
 )

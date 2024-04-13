@@ -137,7 +137,7 @@ open class BluetoothClient(private val context: Context, serviceUUID: UUID?) {
         this.onEndScan = onEndScan
         Timber.d("$logTag --> 开始扫描设备")
         client.startScan { device ->
-            Timber.d("$logTag --> Scan: $device")
+//            Timber.d("$logTag --> Scan: $device")
             clientHandler.post { deviceCallback.call(device) }
         }
         if (timeMillis > 0) {

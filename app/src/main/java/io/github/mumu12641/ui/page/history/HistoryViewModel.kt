@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.mumu12641.data.local.DefaultECGModelRepository
 import io.github.mumu12641.data.local.model.ECGModel
+import io.github.mumu12641.util.FileUtil
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,6 +44,7 @@ class HistoryViewModel @Inject constructor(
         }) {
             _expandIndex.value = -1
             ecgModelRepository.deleteECG(ecgModel)
+            FileUtil.removeECGFile(ecgModel)
         }
 
     }

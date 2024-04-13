@@ -41,7 +41,7 @@ object FileUtil {
         val txtName = time + "_txt"
         val wavName = time + "_wav"
         val pcmName = time + "_pcm"
-        writeECGDataToTxt(ecgData, txtName)
+        val txtPath = writeECGDataToTxt(ecgData, txtName)
         val jpgPath = writeBitmapToFile(bitmap, bitmapName)
         val pcmPath =
             writeECGDataToPcm(
@@ -52,11 +52,11 @@ object FileUtil {
         delay(1000)
         Timber.tag(TAG).d("Save ECG to database")
         return ECGModel(
-            0, time, pcmPath, wavPath, jpgPath, time, null
+            0, time, pcmPath, wavPath, jpgPath, txtPath, time, null
         )
     }
 
-    private fun writeECGDataToTxt(ecgData: List<Int>, name: String) {
+    private fun writeECGDataToTxt(ecgData: List<Int>, name: String): String {
         val file = createFile("$name.txt")
         file.bufferedWriter().use { writer ->
             for (ecg in ecgData) {
@@ -64,6 +64,7 @@ object FileUtil {
             }
         }
         Timber.tag(TAG).d("Save ECGData to %s", file.absolutePath)
+        return file.absolutePath
     }
 
     private fun writeBitmapToFile(bitmap: Bitmap, name: String): String {
@@ -124,6 +125,20 @@ object FileUtil {
     }
 
     private fun Context.getFileProvider() = "$packageName.provider"
+
+    private fun removeFile(path: String) = path.runCatching {
+        File(path).delete()
+    }
+
+    fun removeECGFile(ecgModel: ECGModel) {
+        ecgModel.apply {
+            removeFile(this.jpgPath)
+            removeFile(this.wavPath)
+            removeFile(this.pcmPath)
+            removeFile(this.txtPath)
+        }
+    }
+
     private external fun pcmToWavJNI(
         pcmPath: String, wavPath: String
     ): Int

@@ -4,7 +4,7 @@ object DataUtil {
 
     private val TAG = "DataUtil"
 
-    private fun linearInterpolation(ecgData: List<Int>, factor: Int = 20): List<Int> {
+    private fun linearInterpolation(ecgData: List<Int>, factor: Int = 47): List<Int> {
         val upSampledList = mutableListOf<Int>()
         for (i in 0 until ecgData.size - 1) {
             val startValue = ecgData[i]
@@ -24,7 +24,7 @@ object DataUtil {
     }
 
     fun quantitativeSampling(ecgData: List<Int>): List<Int> {
-        val upSampledList = linearInterpolation(ecgData, 20)
+        val upSampledList = linearInterpolation(ecgData)
         val filter = upSampledList.filter { it != 0 }
         val meanValue = filter.average()
         val norm = filter.map { it - meanValue }

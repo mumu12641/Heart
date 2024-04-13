@@ -1,13 +1,12 @@
 package io.github.mumu12641.BLE
 
 import android.bluetooth.BluetoothGatt.CONNECTION_PRIORITY_HIGH
+import io.github.mumu12641.App.Companion.context
 import io.github.mumu12641.BLE.util.BluetoothClient
 import io.github.mumu12641.BLE.util.client.Characteristic
 import io.github.mumu12641.BLE.util.client.ClientState
-import io.github.mumu12641.BLE.util.client.ClientType
 import io.github.mumu12641.BLE.util.client.ConnectState
 import io.github.mumu12641.BLE.util.client.Device
-import io.github.mumu12641.App.Companion.context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -66,7 +65,7 @@ class BLEService {
     fun connect(device: Device) {
         bluetoothClient.disconnect()
         bluetoothClient.stopScan()
-        bluetoothClient.connect(device, 23) {
+        bluetoothClient.connect(device, 64) {
             when (it) {
                 ConnectState.CONNECTED -> {
                     bluetoothClient.requestConnectionPriority(CONNECTION_PRIORITY_HIGH)
@@ -144,15 +143,20 @@ class BLEService {
         var num = 0
         var buffer: MutableList<Int>
         var s = ""
-        val start = System.currentTimeMillis()
+        var startTime: Long = 0
+        var start = true
+        _bluetoothState.value.ecgData = MutableList(ECG_DATA_SIZE) { 0 }
         bluetoothClient.receiveData(_bluetoothState.value.receiveCharacteristic!!.uuid) { data ->
             if (_bluetoothState.value.bleState != BLEState.Stop) {
                 _bluetoothState.value.bleState = BLEState.Fetching
+                if (start) {
+                    startTime = System.currentTimeMillis()
+                    start = false
+                }
                 val voltageStr = data.toString(Charsets.US_ASCII)
 //                Timber.tag(TAG)
 //                    .d("Update Data $voltageStr")
                 s = voltageStr + s
-                num++
                 if (num == 32) {
                     num = 0
                     buffer =
@@ -164,14 +168,15 @@ class BLEService {
                         buffer.removeAt(buffer.size - 1)
                         _bluetoothState.value.ecgData.addAll(0, buffer)
                         buffer.clear()
-                        val time = (System.currentTimeMillis() - start) / 1000f
+                        val time = (System.currentTimeMillis() - startTime) / 1000f
                         val cnt = _bluetoothState.value.ecgData.count { it != 0 }
                         val len = _bluetoothState.value.ecgData.size
                         Timber.tag(TAG)
-                            .d("Update Data $time s, $cnt, $len")
+                            .d("Update Data, $time, $cnt, $len")
                         delay(100)
                     }
                 }
+                num++
             }
         }
     }
