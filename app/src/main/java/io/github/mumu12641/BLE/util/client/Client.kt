@@ -125,12 +125,12 @@ data class Characteristic(val uuid: UUID,
 }
 
 enum class ConnectState(private val desc: String){
-    CONNECTING("连接中"),
-    CONNECT_TIMEOUT("连接超时"),
-    CONNECTED("已连接"),
-    CONNECT_ERROR("连接异常"),
-    DISCONNECTED( "连接断开"),
-    RECONNECT("重新连接");
+    CONNECTING("Connecting"),
+    CONNECT_TIMEOUT("Connect Timeout"),
+    CONNECTED("Connected"),
+    CONNECT_ERROR("Connect Error"),
+    DISCONNECTED( "Disconnected"),
+    RECONNECT("Reconnect");
 }
 
 fun interface ConnectStateCallback{

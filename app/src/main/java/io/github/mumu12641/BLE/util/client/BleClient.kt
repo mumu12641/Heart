@@ -22,9 +22,6 @@ import java.util.Timer
 import java.util.TimerTask
 import java.util.UUID
 
-/**
- * 经典蓝牙
- * */
 @SuppressLint("MissingPermission")
 internal class BleClient(
     override val context: Context,
@@ -203,7 +200,7 @@ internal class BleClient(
                 )
             }
 
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> {
+            true     -> {
                 realDevice.connectGatt(
                     context, false, gattCallback,
                     BluetoothDevice.TRANSPORT_LE
@@ -260,11 +257,11 @@ internal class BleClient(
 
     private fun getGattService(): BluetoothGattService? {
         if (bluetoothGatt == null) {
-            Timber.e("$logTag --> 设备未连接!")
+            Timber.e("$logTag --> Device not connected!")
             return null
         }
         if (serviceUUID == null) {
-            Timber.e("$logTag --> 未设置serviceUUID!")
+            Timber.e("$logTag --> serviceUUID not set!")
             return null
         }
         val gattService = bluetoothGatt!!.getService(serviceUUID)

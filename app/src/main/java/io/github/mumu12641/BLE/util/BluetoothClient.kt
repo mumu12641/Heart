@@ -80,7 +80,7 @@ open class BluetoothClient(private val context: Context, serviceUUID: UUID?) {
 
             ClientState.LOCATION_DISABLE -> {
                 (context as Activity).startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-                Toast.makeText(context, "当前设备蓝牙服务需要开启定位服务！", Toast.LENGTH_SHORT)
+                Toast.makeText(context, "The Bluetooth service of the current device needs to enable location services！", Toast.LENGTH_SHORT)
                     .show()
             }
 
@@ -135,7 +135,7 @@ open class BluetoothClient(private val context: Context, serviceUUID: UUID?) {
             return false
         }
         this.onEndScan = onEndScan
-        Timber.d("$logTag --> 开始扫描设备")
+        Timber.d("$logTag --> Start scanning devices")
         client.startScan { device ->
 //            Timber.d("$logTag --> Scan: $device")
             clientHandler.post { deviceCallback.call(device) }
@@ -153,7 +153,7 @@ open class BluetoothClient(private val context: Context, serviceUUID: UUID?) {
     @CallSuper
     open fun stopScan() {
         if (onEndScan != null) {
-            Timber.d("$logTag --> 停止扫描设备, ${Thread.currentThread().name}")
+            Timber.d("$logTag --> Stop scanning devices, ${Thread.currentThread().name}")
             client.stopScan()
             onEndScan?.invoke()
             onEndScan = null
@@ -183,7 +183,7 @@ open class BluetoothClient(private val context: Context, serviceUUID: UUID?) {
             client.connect(device, mtu, timeoutMillis) { state ->
                 Timber.d("$logTag --> connectState: $state")
                 if (state == ConnectState.DISCONNECTED && !drivingDisconnect) {
-                    Timber.d("$logTag --> 被动 disconnect，可以尝试重连")
+                    Timber.d("$logTag --> Passive disconnect, you can try to reconnect")
                     checkToReconnect(
                         device,
                         mtu,
@@ -219,11 +219,11 @@ open class BluetoothClient(private val context: Context, serviceUUID: UUID?) {
     ) {
         if (reconnectMaxCount > 0) {
             if (curReconnectCount < reconnectMaxCount) {
-                Timber.d("$logTag --> 开始重连count=${++curReconnectCount}")
+                Timber.d("$logTag --> Start reconnecting count=${++curReconnectCount}")
                 callConnectState(stateCallback, ConnectState.RECONNECT)
                 connect(device, mtu, timeoutMillis, reconnectMaxCount, stateCallback)
             } else {
-                Timber.d("$logTag --> 超过最大重连次数，停止重连！")
+                Timber.d("$logTag --> Exceeds the maximum number of reconnections and stops reconnecting！")
                 callConnectState(stateCallback, state)
                 disconnect()
             }
@@ -246,10 +246,10 @@ open class BluetoothClient(private val context: Context, serviceUUID: UUID?) {
     fun changeMtu(mtu: Int): Boolean {
         BluetoothHelper.checkMtuRange(mtu)
         return if (client.changeMtu(mtu)) {
-            Timber.d("$logTag --> mtu修改成功")
+            Timber.d("$logTag --> mtu modified successfully")
             true
         } else {
-            Timber.d("$logTag --> mtu修改失败")
+            Timber.d("$logTag --> mtu modification failed")
             false
         }
     }
@@ -333,10 +333,10 @@ open class BluetoothClient(private val context: Context, serviceUUID: UUID?) {
     ) {
         if (resendMaxCount > 0) {
             if (resendCount < resendMaxCount) {
-                Timber.d("$logTag --> 开始重发count=${resendCount + 1}")
+                Timber.d("$logTag --> Start resending count=${resendCount + 1}")
                 sendData(uuid, data, timeoutMillis, resendCount + 1, resendMaxCount, callback)
             } else {
-                Timber.d("$logTag --> 超过最大重发次数，停止重发！")
+                Timber.d("$logTag --> If the maximum number of resends is exceeded, stop resending!")
                 callback.call(false, data)
             }
         } else {
@@ -382,10 +382,10 @@ open class BluetoothClient(private val context: Context, serviceUUID: UUID?) {
     ) {
         if (resendMaxCount > 0) {
             if (rereadCount < resendMaxCount) {
-                Timber.d("$logTag --> 开始重读count=${rereadCount + 1}")
+                Timber.d("$logTag --> Start rereading count=${rereadCount + 1}")
                 readData(uuid, timeoutMillis, rereadCount + 1, resendMaxCount, callback)
             } else {
-                Timber.d("$logTag --> 超过最大重读次数，停止重读！")
+                Timber.d("$logTag --> The maximum number of rereads has been exceeded, stop rereading!")
                 callback.call(false, null)
             }
         } else {
@@ -402,7 +402,7 @@ open class BluetoothClient(private val context: Context, serviceUUID: UUID?) {
         drivingDisconnect = true
         clientHandler.removeCallbacksAndMessages(null)
         client.disconnect()
-        Timber.d("$logTag --> 主动 disconnect")
+        Timber.d("$logTag --> Actively disconnect")
     }
 
     /**

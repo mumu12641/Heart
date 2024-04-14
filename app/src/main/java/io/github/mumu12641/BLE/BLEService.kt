@@ -153,8 +153,6 @@ class BLEService {
                     start = false
                 }
                 val voltageStr = data.toString(Charsets.US_ASCII)
-//                Timber.tag(TAG)
-//                    .d("Update Data $voltageStr")
                 s = voltageStr + s
                 if (num == 32) {
                     num = 0

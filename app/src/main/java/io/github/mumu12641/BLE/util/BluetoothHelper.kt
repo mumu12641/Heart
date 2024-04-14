@@ -26,18 +26,18 @@ internal object BluetoothHelper {
             if(intent.action == BluetoothAdapter.ACTION_STATE_CHANGED){
                 when(intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, 0)){
                     BluetoothAdapter.STATE_TURNING_ON -> {
-                        Timber.d("$logTag --> 蓝牙正在打开...")
+                        Timber.d("$logTag --> Bluetooth is turning on...")
                     }
                     BluetoothAdapter.STATE_ON -> {
-                        Timber.d("$logTag --> 蓝牙已经打开。")
+                        Timber.d("$logTag --> Bluetooth is on.")
                         turnOn()
                     }
                     BluetoothAdapter.STATE_TURNING_OFF -> {
-                        Timber.d("$logTag --> 蓝牙正在关闭...")
+                        Timber.d("$logTag --> Bluetooth is turning off...")
                         turnOff()
                     }
                     BluetoothAdapter.STATE_OFF -> {
-                        Timber.d("$logTag --> 蓝牙已经关闭。")
+                        Timber.d("$logTag --> Bluetooth is off.")
                     }
                 }
             }
@@ -84,11 +84,11 @@ internal object BluetoothHelper {
         //Android13及以上不允许App启用/关闭蓝牙
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU){
             if(enable){
-                Timber.d("$logTag --> 请求开启蓝牙")
+                Timber.d("$logTag --> Request to turn on Bluetooth")
                 @Suppress("DEPRECATION")
                 return bluetoothAdapter.enable()
             } else {
-                Timber.d("$logTag --> 请求关闭蓝牙")
+                Timber.d("$logTag --> Request to turn off Bluetooth")
                 @Suppress("DEPRECATION")
                 return bluetoothAdapter.disable()
             }

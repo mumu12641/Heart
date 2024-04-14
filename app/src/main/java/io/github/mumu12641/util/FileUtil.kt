@@ -44,14 +44,16 @@ object FileUtil {
         val bitmapName = time + "_jpg"
         val txtName = time + "_txt"
         val wavName = time + "_wav"
+        val wavName8 = time + "_wav8000"
         val pcmName = time + "_pcm"
         val txtPath = writeECGDataToTxt(ecgData, txtName)
         val jpgPath = writeBitmapToFile(bitmap, bitmapName)
         val pcmPath = createFile("$pcmName.pcm").absolutePath
         val wavPath = createFile("$wavName.wav").absolutePath
+        val wavPath8 = createFile("$wavName8.wav").absolutePath
         pyObject.callAttr(
             "txt2wav",
-            txtPath, wavPath
+            txtPath, wavPath, wavPath8, pcmPath
         )
         Timber.tag(TAG).d("Save ECG to database")
         delay(1000)
