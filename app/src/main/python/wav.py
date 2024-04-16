@@ -22,6 +22,8 @@ def read_integers_from_file(filename):
                 integers.append(int(line.strip()))
     return integers
 def linear_interpolation(int_array, factor):
+    if factor == 1:
+        return int_array
     upsampled_array = []
     for i in range(len(int_array) - 1):
         for j in range(factor):
@@ -56,13 +58,13 @@ def write2wav(integers,wav_path, factor, freq):
         wav_file.setsampwidth(2)
         # wav freq
         wav_file.setframerate(freq)
-        wav_file.setnframes(len(filtered_signal))
-        wav_file.writeframes(np.array(filtered_signal, dtype=np.int16).tobytes())
+        wav_file.setnframes(len(normalized_array))
+        wav_file.writeframes(np.array(normalized_array, dtype=np.int16).tobytes())
 
 
 def txt2wav(txt_path, wav_path, real_wav_path, pcm_path):
     integers = read_integers_from_file(txt_path)
     integers = [x for x in integers if x != 0]
 
-    write2wav(integers, wav_path, 6, 1000)
-    write2wav(integers, real_wav_path, 47, 8000)
+    write2wav(integers, wav_path, 1, 2000)
+    write2wav(integers, real_wav_path, 4, 8000)

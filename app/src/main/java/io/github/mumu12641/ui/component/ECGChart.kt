@@ -21,7 +21,6 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import io.github.mumu12641.BLE.ECG_DATA_SIZE
-import timber.log.Timber
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
@@ -111,8 +110,12 @@ private fun LineChart.ConfigureGrid(
 //    val yMax = ceil(2640 / majorY) * majorY
 //    val yMin = 2470f
 //    val yMax = 2610f
-    val yMin = 2440f
-    val yMax = 2600f
+
+
+//    val yMin = 2440f
+//    val yMax = 2600f
+    val yMin = 2394f
+    val yMax = 2649f
 
     xGridLines(lines, minorX, yMin, yMax, xMin, xMax, false, lineColor)
     yGridLines(lines, minorY, yMin, yMax, xMin, xMax, false, lineColor)
