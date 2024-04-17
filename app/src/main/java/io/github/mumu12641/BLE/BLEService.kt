@@ -1,12 +1,12 @@
 package io.github.mumu12641.BLE
 
 import android.bluetooth.BluetoothGatt.CONNECTION_PRIORITY_HIGH
-import io.github.mumu12641.App.Companion.context
 import io.github.mumu12641.BLE.util.BluetoothClient
 import io.github.mumu12641.BLE.util.client.Characteristic
 import io.github.mumu12641.BLE.util.client.ClientState
 import io.github.mumu12641.BLE.util.client.ConnectState
 import io.github.mumu12641.BLE.util.client.Device
+import io.github.mumu12641.MainActivity.Companion.context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -158,7 +158,7 @@ class BLEService {
 //                val voltageStr = data.toString(Charsets.US_ASCII)
                 s = data + s
                 if (s.size >= 200 * 4) {
-                    buffer = data.map { (it.toInt() and 0xFF) + 2394 }.toMutableList()
+                    buffer = s.map { (it.toInt() and 0xFF) + 2394 }.toMutableList()
 //                    s = ""
                     s = ByteArray(0)
                     scope.launch {
@@ -172,7 +172,6 @@ class BLEService {
                         val len = _bluetoothState.value.ecgData.size
                         Timber.tag(TAG)
                             .d("Update Data, $time, $cnt, $len")
-
 //                        delay(100)
                     }
                 }

@@ -1,5 +1,7 @@
 package io.github.mumu12641
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,6 +20,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        context = this
         Timber.plant(Timber.DebugTree())
         setContent {
             Surface(
@@ -32,8 +35,10 @@ class MainActivity : ComponentActivity() {
     }
 
 
-
     companion object {
+        @SuppressLint("StaticFieldLeak")
+        lateinit var context: Context
+
         init {
             System.loadLibrary("wave_lib")
         }

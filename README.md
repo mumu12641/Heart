@@ -23,6 +23,7 @@ This is my undergraduate graduation project at the School of Artificial Intellig
 - Room
 - Flow
 - DataStore
-- Bluetooth
+- BLE
+- Chaquopy
 - .......
 

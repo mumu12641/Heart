@@ -66,5 +66,5 @@ def txt2wav(txt_path, wav_path, real_wav_path, pcm_path):
     integers = read_integers_from_file(txt_path)
     integers = [x for x in integers if x != 0]
 
-    write2wav(integers, wav_path, 1, 2000)
-    write2wav(integers, real_wav_path, 4, 8000)
+    write2wav(integers, wav_path, 1, 1000)
+    # write2wav(integers, real_wav_path, 4, 8000)
