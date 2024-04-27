@@ -153,18 +153,11 @@ class BLEService {
                     startTime = System.currentTimeMillis()
                     start = false
                 }
-//                Timber.tag(TAG)
-//                    .d("Update Data, %s", data.size)
-//                val voltageStr = data.toString(Charsets.US_ASCII)
                 s = data + s
                 if (s.size >= 200 * 4) {
                     buffer = s.map { (it.toInt() and 0xFF) + 2394 }.toMutableList()
-//                    s = ""
                     s = ByteArray(0)
                     scope.launch {
-//                        buffer.removeAt(buffer.size - 1)
-//                        Timber.tag(TAG)
-//                            .d("Update Data, $buffer")
                         _bluetoothState.value.ecgData.addAll(0, buffer)
                         buffer.clear()
                         val time = (System.currentTimeMillis() - startTime) / 1000f
@@ -172,7 +165,6 @@ class BLEService {
                         val len = _bluetoothState.value.ecgData.size
                         Timber.tag(TAG)
                             .d("Update Data, $time, $cnt, $len")
-//                        delay(100)
                     }
                 }
             }
