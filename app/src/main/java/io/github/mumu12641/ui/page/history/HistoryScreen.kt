@@ -1,5 +1,6 @@
 package io.github.mumu12641.ui.page.history
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.clickable
@@ -10,12 +11,15 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.CloudUpload
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -82,6 +86,7 @@ fun HistoryContent(modifier: Modifier, historyViewModel: HistoryViewModel) {
     val uiState by historyViewModel.uiState.collectAsState()
     val ecgModels = uiState.ecgModels.reversed()
     val expandIndex = uiState.expandIndex
+    val loadState = uiState.loadState
     JetLimeColumn(
         modifier = modifier.padding(horizontal = 10.dp),
         itemsList = ItemsList(ecgModels),
@@ -92,7 +97,12 @@ fun HistoryContent(modifier: Modifier, historyViewModel: HistoryViewModel) {
                 position = position,
             ),
         ) {
-            ECGCard(ecg = ecg, expandIndex == index, { historyViewModel.setExpandIndex(index) }) {
+            ECGCard(
+                ecg = ecg,
+                loadState,
+                expandIndex == index,
+                { historyViewModel.setExpandIndex(index) },
+                { historyViewModel.updateECG(it) }) {
                 historyViewModel.deleteECG(it)
             }
         }
@@ -101,10 +111,18 @@ fun HistoryContent(modifier: Modifier, historyViewModel: HistoryViewModel) {
 }
 
 @Composable
-fun ECGCard(ecg: ECGModel, expand: Boolean, chooseIndex: () -> Unit, delete: (ECGModel) -> Unit) {
+fun ECGCard(
+    ecg: ECGModel,
+    loadState: HistoryViewModel.LoadState,
+    expand: Boolean,
+    chooseIndex: () -> Unit,
+    update: (ECGModel) -> Unit,
+    delete: (ECGModel) -> Unit
+) {
     val height by animateDpAsState(targetValue = if (expand) 380.dp else 125.dp, label = "")
     val corner by animateDpAsState(targetValue = if (expand) 32.dp else 16.dp, label = "")
     val imgHeight by animateDpAsState(targetValue = if (expand) 300.dp else 125.dp, label = "")
+
     Card(modifier = Modifier
         .padding(vertical = 5.dp)
         .fillMaxWidth()
@@ -146,6 +164,28 @@ fun ECGCard(ecg: ECGModel, expand: Boolean, chooseIndex: () -> Unit, delete: (EC
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(top = 4.dp)
                         )
+                    }
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        AnimatedContent(targetState = loadState, label = "") {
+                            if (it == HistoryViewModel.LoadState.Loading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                                )
+                            } else {
+                                IconButton(onClick = { update(ecg) }) {
+                                    Icon(
+                                        Icons.Outlined.CloudUpload,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                        }
                     }
 
                     IconButton(onClick = { FileUtil.openFile(ecg.wavPath) }) {

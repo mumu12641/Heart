@@ -36,7 +36,7 @@ android {
             buildPython("D:/Softwares/python3.8/python.exe")
             version = "3.8"
             pip {
-                options ("--extra-index-url", "https://pypi.tuna.tsinghua.edu.cn/simple/")
+                options("--extra-index-url", "https://pypi.tuna.tsinghua.edu.cn/simple/")
                 install("scipy")
                 install("wave")
                 install("numpy")
@@ -195,4 +195,8 @@ dependencies {
     implementation("androidx.datastore:datastore:1.0.0")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("com.google.protobuf:protobuf-javalite:3.25.1")
+
+
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 }

@@ -11,6 +11,8 @@ interface ECGModelRepository {
     suspend fun addECG(ecgModel: ECGModel)
 
     suspend fun deleteECG(ecgModel: ECGModel)
+
+    suspend fun updateECG(ecgModel: ECGModel)
 }
 
 class DefaultECGModelRepository @Inject constructor(
@@ -26,5 +28,9 @@ class DefaultECGModelRepository @Inject constructor(
 
     override suspend fun deleteECG(ecgModel: ECGModel) {
         ecgDao.deleteECG(ecgModel)
+    }
+
+    override suspend fun updateECG(ecgModel: ECGModel) {
+        ecgDao.updateECG(ecgModel)
     }
 }

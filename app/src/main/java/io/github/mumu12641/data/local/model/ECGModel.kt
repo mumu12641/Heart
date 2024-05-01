@@ -13,7 +13,7 @@ data class ECGModel(
     @ColumnInfo(name = "jpgPath") val jpgPath: String,
     @ColumnInfo(name = "txtPath") val txtPath: String,
     @ColumnInfo(name = "time") val time: String,
-    @ColumnInfo(name = "des") val des: String?
+    @ColumnInfo(name = "des") var des: String?
 )
 
 

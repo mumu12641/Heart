@@ -9,6 +9,7 @@ import io.github.mumu12641.BLE.util.client.Device
 import io.github.mumu12641.MainActivity.Companion.context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -141,6 +142,7 @@ class BLEService {
         var num = 0
         var buffer: MutableList<Int>
         var s = ByteArray(0)
+//        var s = ""
         var startTime: Long = 0
         var start = true
         _bluetoothState.value.ecgData = MutableList(ECG_DATA_SIZE) { 0 }
@@ -153,6 +155,10 @@ class BLEService {
                     startTime = System.currentTimeMillis()
                     start = false
                 }
+
+                /*
+                * 1kHz
+                * */
                 s = data + s
                 if (s.size >= 200 * 4) {
                     buffer = s.map { (it.toInt() and 0xFF) + 2394 }.toMutableList()

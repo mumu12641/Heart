@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import io.github.mumu12641.data.local.model.ECGModel
 import kotlinx.coroutines.flow.Flow
 
@@ -18,4 +19,7 @@ interface ECGDao {
 
     @Delete
     suspend fun deleteECG(ecgModel: ECGModel)
+
+    @Update
+    suspend fun updateECG(ecgModel: ECGModel)
 }
