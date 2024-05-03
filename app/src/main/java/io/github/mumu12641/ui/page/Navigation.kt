@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import io.github.mumu12641.ui.page.about.AboutScreen
 import io.github.mumu12641.ui.page.history.HistoryScreen
 import io.github.mumu12641.ui.page.home.HomeScreen
 import io.github.mumu12641.ui.page.profile.ProfileScreen
@@ -76,6 +77,9 @@ fun Navigation() {
         }
         composable(Route.PROFILE) {
             ProfileScreen(navController)
+        }
+        composable(Route.ABOUT) {
+            AboutScreen(navController)
         }
     }
 }

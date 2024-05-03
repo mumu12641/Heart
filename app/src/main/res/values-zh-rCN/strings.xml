@@ -19,4 +19,9 @@
     <string name="genetic_disease">家族遗传病</string>
     <string name="own_disease">自身疾病</string>
     <string name="open_file_error">打开wav文件失败</string>
+    <string name="about">关于</string>
+    <string name="introduction">本软件是为研制便携式心音信号采集与信息处理系统开发的移动端软件，负责通过蓝牙接收来自硬件的数据，通过网络与服务器通信得到心音处理结果。旨在实现心音采集处理便携性、有效性，守护用户健康。</string>
+    <string name="intro">简介</string>
+    <string name="version">版本信息</string>
+    <string name="copyright">版权信息</string>
 </resources>

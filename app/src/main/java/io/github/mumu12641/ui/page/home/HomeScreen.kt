@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Bluetooth
 import androidx.compose.material.icons.outlined.BluetoothConnected
 import androidx.compose.material.icons.outlined.BluetoothDisabled
+import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.GetApp
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Link
@@ -52,11 +53,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import io.github.mumu12641.BLE.util.client.Device
 import io.github.mumu12641.BLE.BLEState
+import io.github.mumu12641.BLE.util.client.Device
 import io.github.mumu12641.R
 import io.github.mumu12641.ui.component.EcgChart
 import io.github.mumu12641.util.Route
+import io.github.mumu12641.util.Route.ABOUT
 import io.github.mumu12641.util.Route.HISTORY
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -82,14 +84,26 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = hilt
                 )
             }
         }, actions = {
-            IconButton(
-                onClick = { navController.navigate(HISTORY) },
-            ) {
-                Icon(
-                    Icons.Outlined.History,
-                    contentDescription = null,
-                )
+            Row {
+
+                IconButton(
+                    onClick = { navController.navigate(HISTORY) },
+                ) {
+                    Icon(
+                        Icons.Outlined.History,
+                        contentDescription = null,
+                    )
+                }
+                IconButton(
+                    onClick = { navController.navigate(ABOUT) },
+                ) {
+                    Icon(
+                        Icons.Outlined.ErrorOutline,
+                        contentDescription = null,
+                    )
+                }
             }
+
 
         })
     }, content = { paddingValues ->

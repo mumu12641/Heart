@@ -33,8 +33,8 @@ class HistoryViewModel @Inject constructor(
     private val _loadState = MutableStateFlow<LoadState>(LoadState.None)
     val uiState: StateFlow<UiState> = combine(
         ecgModelRepository.ecgModels, _expandIndex, _loadState
-    ) { ecgModels, expandIndex, loadstate ->
-        UiState(ecgModels, expandIndex, loadstate)
+    ) { ecgModels, expandIndex, loadState ->
+        UiState(ecgModels, expandIndex, loadState)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
@@ -63,7 +63,6 @@ class HistoryViewModel @Inject constructor(
             _loadState.value = LoadState.None
         }) {
 //            _expandIndex.value = -1
-//            ecgModelWithState.loadState = LoadState.Loading
             _loadState.value = LoadState.Loading
             val file = File(ecgModel.wavPath)
             val requestBody = file.asRequestBody("audio/wav".toMediaTypeOrNull())

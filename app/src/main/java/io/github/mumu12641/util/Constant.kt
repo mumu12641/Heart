@@ -8,4 +8,5 @@ object Route {
     val HOME = context.getString(R.string.app_name)
     val HISTORY = context.getString(R.string.history)
     val PROFILE = context.getString(R.string.profile)
+    val ABOUT = context.getString(R.string.about)
 }

@@ -22,4 +22,9 @@
     <string name="genetic_disease">Family genetic disease</string>
     <string name="own_disease">Own diseases</string>
     <string name="open_file_error">Failed to open wav file</string>
+    <string name="about">About</string>
+    <string name="introduction">This software is a mobile software developed for the development of a portable heart sound signal acquisition and information processing system. It is responsible for receiving data from the hardware through Bluetooth and communicating with the server through the network to obtain the heart sound processing results. It aims to realize the portability and effectiveness of heart sound collection and processing, and protect the health of users.</string>
+    <string name="intro">Introduction</string>
+    <string name="version">Version Information</string>
+    <string name="copyright">Copyright Information</string>
 </resources>
